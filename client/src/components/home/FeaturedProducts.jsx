@@ -6,8 +6,8 @@ const FeaturedProducts = () => {
     {
       id: 1,
       name: "Silk Dreams Bra Set",
-      price: "₦500,00.99",
-      originalPrice: "₦300,000.00",
+      price: 5000099,
+      originalPrice: 30000000,
       image: "/silkDream.png",
       rating: 4.8,
       reviews: 124,
@@ -16,8 +16,8 @@ const FeaturedProducts = () => {
     {
       id: 2,
       name: "Lace Whisper Collection",
-      price: "₦250,000.99",
-      originalPrice: "₦75000.00",
+      price: 250000,
+      originalPrice: 75000.00,
       image: "/laceWhisper.png",
       rating: 4.9,
       reviews: 89,
@@ -26,8 +26,8 @@ const FeaturedProducts = () => {
     {
       id: 3,
       name: "Velvet Rose Lingerie",
-      price: "₦50,000.99",
-      originalPrice: "₦130,000.00",
+      price: 50000,
+      originalPrice: 130000,
       image: "/velvetRose.png",
       rating: 4.7,
       reviews: 156,
@@ -36,8 +36,8 @@ const FeaturedProducts = () => {
     {
       id: 4,
       name: "Midnight Elegance Set",
-      price: "₦78,000.99",
-      originalPrice: "₦105,000.00",
+      price: 78000,
+      originalPrice: 105000,
       image: "/midNight.png",
       rating: 4.8,
       reviews: 203,

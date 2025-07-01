@@ -1,8 +1,10 @@
+import { Link } from "react-router-dom"
+
 
 
 const CategoryCard = ({category, index = 0}) => {
    return (
-    <div className="relative group cursor-pointer animate-fadeInUp" style={{ animationDelay: `${2.2 + index * 0.2}s` }}>
+    <Link to={category.link} className="relative group cursor-pointer animate-fadeInUp" style={{ animationDelay: `${2.2 + index * 0.2}s` }}>
       <div className={`aspect-square rounded-2xl overflow-hidden bg-gradient-to-br ${category.bg}`}>
         <img
           src={category.image}
@@ -18,7 +20,7 @@ const CategoryCard = ({category, index = 0}) => {
           <p className="text-sm opacity-90">{category.desc}</p>
         </div>
       </div>
-    </div>
+    </Link>
   )
 
 }

@@ -2,9 +2,9 @@ import CategoryCard from "../ui/CategoryCard"
 
 const CategoriesSection = () => {
    const categories = [
-    { name: "Bras", desc: "Perfect fit, ultimate comfort", bg: "from-pink-200 to-red-200", image:"/bracat.png" },
-    { name: "Panties", desc: "Everyday essentials", bg: "from-red-200 to-pink-200", image:"/pantcat.png"},
-    { name: "Sets", desc: "Complete collections", bg: "from-pink-300 to-red-300", image:"/setCat.png" },
+    { name: "Bras", desc: "Perfect fit, ultimate comfort", bg: "from-pink-200 to-red-200", image:"/bracat.png", link:"/category/bras"},
+    { name: "Panties", desc: "Everyday essentials", bg: "from-red-200 to-pink-200", image:"/pantcat.png",link:"/category/panties"},
+    { name: "Sets", desc: "Complete collections", bg: "from-pink-300 to-red-300", image:"/setCat.png",link:"/category/sets"},
   ]
 
   return (

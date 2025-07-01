@@ -53,8 +53,8 @@ const ProductCard = ({product, index = 0}) => {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="text-lg font-bold text-red-700">{product.price}</span>
-              <span className="text-sm text-gray-400 line-through">{product.originalPrice}</span>
+              <span className="text-lg font-bold text-red-700">₦{product.price}</span>
+              <span className="text-sm text-gray-400 line-through">₦{product.originalPrice}</span>
             </div>
             <Button
               size="sm"
