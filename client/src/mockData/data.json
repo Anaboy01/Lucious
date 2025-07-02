@@ -1,0 +1,48 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Silk Dreams Bra Set",
+      "price": 50000,
+      "originalPrice": 120000,
+       "images": [
+      "/product_one.png",
+      "/product_two.png",
+     "/product_three.png",
+     "/product_four.png"
+    ],
+    "coverImage":"/silkDream.png",
+      "category": "set",
+    "description":
+      "Indulge in luxury with our Silk Dreams Bra Set. Crafted from the finest silk and delicate lace, this set combines comfort with elegance. The underwire provides perfect support while the soft cups ensure all-day comfort.", 
+    "features": [
+      "Premium silk construction",
+      "Delicate French lace details",
+      "Underwire support",
+      "Adjustable straps",
+      "Matching panties included"
+    ],
+      "rating": 4.8,
+        "reviews": [
+            {
+            "userId":1,
+            "userName":"Anate",
+            "userPhoto": "",
+            "review":"Fast delivery.. really comfy"
+        }
+        ],
+      "isNew": true,
+      "colors": [
+        {"colorName": "Night Blue", "colorValue": "#122756"},
+        {"colorName": "White almunium", "colorValue": "#a5a5a5"},
+        {"colorName": "Opal green", "colorValue": "#015d52"},
+        {"colorName": "Copper brown", "colorValue": "#8e402a"}
+    ],
+      "sizes": {"S":10, "M":5, "L":10},
+      "dateAdded": "2024-06-01",
+    "stock": 25,
+    "status": "out_of_stock",
+     "sales": 15,
+    }
+  ]
+}

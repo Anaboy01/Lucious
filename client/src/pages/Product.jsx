@@ -6,6 +6,8 @@ import { Heart, ShoppingBag, Star, Minus, Plus, ArrowLeft, Truck, Shield, Rotate
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import PageHeader from "@/components/categories/PageHeader"
+import Reviews from "@/components/ui/Reviews"
+
 
 
 
@@ -16,6 +18,45 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
   const [wishlisted, setWishlisted] = useState(false)
+
+  const [reviews, setReviews] = useState([
+  {
+    userId: 1,
+    userName: "Anate",
+    userPhoto: "/profile.png",
+    review: "Fast delivery.. really comfy",
+  },
+  {
+    userId: 1,
+    userName: "Anate",
+    userPhoto: "/profile.png",
+    review: "Fast delivery.. really comfy",
+  },
+  {
+    userId: 1,
+    userName: "Anate",
+    userPhoto: "/profile.png",
+    review: "Fast delivery.. really comfy",
+  },
+  {
+    userId: 1,
+    userName: "Anate",
+    userPhoto: "/profile.png",
+    review: "Fast delivery.. really comfy",
+  },
+  {
+    userId: 1,
+    userName: "Anate",
+    userPhoto: "/profile.png",
+    review: "Fast delivery.. really comfy",
+  },
+  {
+    userId: 1,
+    userName: "Anate",
+    userPhoto: "/profile.png",
+    review: "Fast delivery.. really comfy",
+  },
+])
 
   const toggleWishlist = () => {
     setWishlisted((prev) => !prev)
@@ -268,7 +309,9 @@ const Product = () => {
             </div>
 
           </div>
+          
         </div>
+        <Reviews reviews={reviews} />
 
         {/* Related Products */}
         <section className="mt-16">
