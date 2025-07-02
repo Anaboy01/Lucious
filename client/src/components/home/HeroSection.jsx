@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Heart, Star } from "lucide-react"
+import { Link } from "react-router-dom"
 
 
 
@@ -106,11 +107,14 @@ const HeroSection = () => {
         <div className="flex items-center justify-center min-h-screen py-20">
           <div className="text-center relative z-20 max-w-4xl mx-auto px-4">
             {/* Floating Badge with Hover Effect */}
-            <Badge className="inline-flex items-center space-x-2 bg-white/25 backdrop-blur-md rounded-full px-6 py-3 mb-8 border border-white/40 shadow-lg animate-fadeInUp hover:scale-105 hover:bg-white/35 transition-all duration-300 cursor-pointer group">
+            <Link to="/newArrivals">
+               <Badge className="inline-flex items-center space-x-2 bg-white/25 backdrop-blur-md rounded-full px-6 py-3 mb-8 border border-white/40 shadow-lg animate-fadeInUp hover:scale-105 hover:bg-white/35 transition-all duration-300 cursor-pointer group">
               <div className="w-2 h-2 bg-pink-300 rounded-full animate-pulse group-hover:bg-pink-400"></div>
               <span className="text-white font-medium group-hover:text-pink-100">New Exclusive Collection</span>
               <div className="w-2 h-2 bg-pink-300 rounded-full animate-pulse group-hover:bg-pink-400"></div>
             </Badge>
+            </Link>
+           
 
             {/* Interactive Main Headline with Text Effects */}
             <div className="relative mb-8">
@@ -160,7 +164,8 @@ const HeroSection = () => {
               className="flex flex-col sm:flex-row gap-6 mb-16 justify-center animate-fadeInUp"
               style={{ animationDelay: "0.8s" }}
             >
-              <Button
+              <Link to="/sets">
+                <Button
                 className="group relative bg-white text-pink-600 hover:bg-pink-50 px-10 py-4 text-lg font-semibold rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
                 onMouseEnter={(e) => {
                   const ripple = document.createElement("div")
@@ -174,7 +179,9 @@ const HeroSection = () => {
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-pink-500/10 to-pink-500/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               </Button>
+              </Link>
 
+              <Link to="/products">
               <Button
                 variant="outline"
                 className="group relative border-2 border-white text-white hover:bg-white hover:text-pink-600 px-10 py-4 text-lg font-semibold rounded-full bg-white/10 backdrop-blur-sm transform hover:scale-105 transition-all duration-300 overflow-hidden"
@@ -188,6 +195,10 @@ const HeroSection = () => {
                 <span className="relative z-10">Explore Collections</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               </Button>
+              
+              </Link>
+
+              
             </div>
 
             {/* Interactive Feature Pills */}

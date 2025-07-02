@@ -1,4 +1,6 @@
+import { Home } from "lucide-react"
 import { Link } from "react-router-dom"
+
 
 
 
@@ -11,7 +13,7 @@ const BreadCrumb = ({items}) => {
             {index > 0 && <span>/</span>}
             {item.href ? (
               <Link to={item.href} className="hover:text-red-700">
-                {item.name}
+                <Home /> 
               </Link>
             ) : (
               <span className="text-red-700 font-semibold">{item.name}</span>

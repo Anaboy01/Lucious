@@ -90,7 +90,9 @@ const FloatingNavbar = () => {
             {/* Action Buttons */}
             <div className="flex items-center space-x-3">
               {/* Heart Button */}
-              <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
+              
+              <Link to="/wishList">
+                <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
                 <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
 
@@ -98,11 +100,12 @@ const FloatingNavbar = () => {
                 <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-xs text-white font-bold leading-none">3</span>
                 </div>
-              </Button>
+                </Button>
+              </Link>
 
 
               {/* Shopping Bag Button */}
-              <Link href="/cart">
+              <Link to="/cart">
                 <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
                   <ShoppingBag className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>

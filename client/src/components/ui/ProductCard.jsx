@@ -2,10 +2,19 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, Star } from "lucide-react"
+import { useState } from "react"
+import { Link } from "react-router-dom"
 
-const ProductCard = ({product, index = 0}) => {
+const ProductCard = ({ product, index = 0 }) => {
+  const [wishlisted, setWishlisted] = useState(false)
+
+  const toggleWishlist = () => {
+    setWishlisted((prev) => !prev)
+  }
+
   return (
-    <Card
+   <Link to={`/product/${product.id}`}>
+     <Card
       className="group hover:shadow-xl transition-all duration-300 border-pink-100 hover:border-red-200 bg-white/70 backdrop-blur-sm animate-fadeInUp"
       style={{ animationDelay: `${1.6 + index * 0.1}s` }}
     >
@@ -23,13 +32,23 @@ const ProductCard = ({product, index = 0}) => {
               New
             </Badge>
           )}
-          <Button
+          {wishlisted ? (
+            <Button
             size="icon"
             variant="ghost"
+            onClick={toggleWishlist}
             className="absolute top-3 right-3 bg-white/80 hover:bg-white text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <Heart className="w-4 h-4" />
+            <Heart className="w-4 h-4 fill-red-700 text-red-700"  />
           </Button>
+          ):(<Button
+            size="icon"
+            variant="ghost"
+            onClick={toggleWishlist}
+            className="absolute top-3 right-3 bg-white/80 hover:bg-white text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Heart className="w-4 h-4"  />
+          </Button>)}
         </div>
 
         <div className="p-4">
@@ -39,7 +58,9 @@ const ProductCard = ({product, index = 0}) => {
                 <Star
                   key={i}
                   className={`w-4 h-4 ${
-                    i < Math.floor(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                    i < Math.floor(product.rating)
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-300"
                   }`}
                 />
               ))}
@@ -66,6 +87,7 @@ const ProductCard = ({product, index = 0}) => {
         </div>
       </CardContent>
     </Card>
+   </Link>
   )
 }
 

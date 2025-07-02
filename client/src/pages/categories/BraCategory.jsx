@@ -9,7 +9,7 @@ import { Grid, List, ChevronDown, ChevronUp } from "lucide-react"
 import { useState } from "react"
 import ProductCard from "@/components/ui/ProductCard"
 import PageHeader from "@/components/categories/PageHeader"
-import BreadCrumb from "@/components/categories/BreadCrumb"
+
 
 const BraCategory = () => {
   const [viewMode, setViewMode] = useState("grid")
@@ -73,7 +73,7 @@ const BraCategory = () => {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
       <PageHeader title="Luscious Lingerie" />
       <div className="container mx-auto px-4 py-8">
-        <BreadCrumb items={[{ name: "Home", href: "/" }, { name: "Bras" }]} />
+        
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-red-800 bg-clip-text text-transparent">
             Bras Collection
@@ -141,7 +141,7 @@ const BraCategory = () => {
           <div className="flex-1">
             <Card className="mb-6 bg-white/70 backdrop-blur-sm border-pink-100">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3  items-left lg:flex-row lg:items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <span className="text-gray-600">{filteredProducts.length} products</span>
                     <div className="flex items-center space-x-2">
