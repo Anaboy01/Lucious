@@ -164,14 +164,12 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 
     // Send user data
-    const { _id, name, isAdmin, orderList, cartList } = user;
+    const { _id, name, isAdmin} = user;
     res.status(200).json({
         _id,
         name,
         email,
         isAdmin,
-        orderList,
-        cartList,
     });
 });
 

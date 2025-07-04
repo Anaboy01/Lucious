@@ -8,9 +8,19 @@ import { Link } from "react-router-dom"
 const ProductCard = ({ product, index = 0 }) => {
   const [wishlisted, setWishlisted] = useState(false)
 
-  const toggleWishlist = () => {
-    setWishlisted((prev) => !prev)
-  }
+
+  const toggleWishlist = (e) => {
+  e.stopPropagation();
+  e.preventDefault(); // <-- also prevent Link navigation
+  setWishlisted((prev) => !prev);
+};
+
+const handleAddToCart = (e) => {
+  e.stopPropagation();
+  e.preventDefault(); // <-- prevent Link navigation
+  // your add-to-cart logic here
+};
+
 
   return (
    <Link to={`/product/${product.id}`}>
@@ -80,6 +90,7 @@ const ProductCard = ({ product, index = 0 }) => {
             <Button
               size="sm"
               className="bg-gradient-to-r from-pink-500 to-red-800 hover:from-pink-600 hover:to-red-900 text-white"
+              onClick={handleAddToCart}
             >
               Add to Cart
             </Button>

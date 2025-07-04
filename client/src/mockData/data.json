@@ -42,7 +42,22 @@
       "dateAdded": "2024-06-01",
     "stock": 25,
     "status": "out_of_stock",
-     "sales": 15,
+     "sales": 15
+    }
+  ],
+  "cartList":[
+    {
+        "userID": "6852fd6b023f538fc381ed84",
+        "cartList":[{
+           "name": "Velvet Rose Lingerie",
+      "price": 95000.99,
+      "originalPrice": 130000.0,
+      "image": "/velvetRose.png",
+      "color": "Blush",
+      "size": "S",
+      "quantity": 1,
+      "productId": 1000
+        }]
     }
   ]
 }
