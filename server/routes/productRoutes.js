@@ -8,8 +8,9 @@ router.post("/registerProduct", adminProtect, registerProduct)
 router.post("/bulkRegister", adminProtect,bulkRegisterProducts)
 router.post("/review/:id", protect, addProductReview)
 
-router.get("/:id", getAProduct)
+
 router.get("/getProducts", getAllProducts)
+router.get("/:id", getAProduct)
 
 
 router.put("/updateProduct/:id", adminProtect, updateProduct)
