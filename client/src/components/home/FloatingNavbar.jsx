@@ -1,25 +1,35 @@
 import { Button } from "../ui/button";
-import { useState, useEffect } from "react";
-import { Heart, ShoppingBag, Menu, X, User, LayoutDashboard, LogIn } from "lucide-react";
+import { useState, useEffect, use } from "react";
+import {
+  Heart,
+  ShoppingBag,
+  Menu,
+  X,
+  User,
+  LayoutDashboard,
+  LogIn,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-
-
-
+import { useApp } from "@/context/AppContext";
 
 const FloatingNavbar = () => {
- const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isProfileMenu, setIsProfileMenu] = useState(false)
-  const [isLogin, setIsLogin] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenu, setIsProfileMenu] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+
+  const { loggedIn, user, logout } = useApp();
+
+  const isAdmin = user?.isAdmin;
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
+      setIsScrolled(window.scrollY > 50);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navigationItems = [
     { name: "New Arrivals", href: "#" },
@@ -27,23 +37,40 @@ const FloatingNavbar = () => {
     { name: "Panties", href: "#" },
     { name: "Sets", href: "#" },
     { name: "Sleepwear", href: "#" },
-  ]
+  ];
 
-    const profileIcons = [
-    { name: "DashBoard", href: "#" },
-    { name: "Logout", href: "/category/bras" },
-  ]
+  const handleLogout = async () => {
+    await logout();
+    setIsProfileMenu(false);
+  };
+
+  const profileIcons = [
+    ...(isAdmin ? [{ name: "Dashboard", href: "/admin" }] : []),
+    { name: "Logout", action: handleLogout },
+  ];
+
+  useEffect(() => {
+    setIsLogin(loggedIn);
+  }, [loggedIn]);
 
   return (
     <nav
       className={`fixed top-4 left-4 right-4 z-50 transition-all duration-500 ease-out ${
-        isScrolled ? "transform translate-y-0 opacity-100" : "transform translate-y-0 opacity-95"
+        isScrolled
+          ? "transform translate-y-0 opacity-100"
+          : "transform translate-y-0 opacity-95"
       }`}
     >
-      <div className={`mx-auto max-w-7xl transition-all duration-500 ${isScrolled ? "px-4" : "px-6"}`}>
+      <div
+        className={`mx-auto max-w-7xl transition-all duration-500 ${
+          isScrolled ? "px-4" : "px-6"
+        }`}
+      >
         <div
           className={`relative backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 ${
-            isScrolled ? "bg-white/80 rounded-2xl py-3" : "bg-white/70 rounded-3xl py-4"
+            isScrolled
+              ? "bg-white/80 rounded-2xl py-3"
+              : "bg-white/70 rounded-3xl py-4"
           }`}
         >
           {/* Floating Glow Effect */}
@@ -57,8 +84,8 @@ const FloatingNavbar = () => {
                 <img
                   src="/logo.png"
                   alt="Luscious Lingerie Logo"
-                  width={isScrolled ? 100 : 120}
-                  height={isScrolled ? 50 : 60}
+                  width={isScrolled ? 80: 100}
+                  height={isScrolled ? 40 : 50}
                   className="relative object-contain transition-all duration-500 group-hover:scale-105"
                 />
               </div>
@@ -90,51 +117,64 @@ const FloatingNavbar = () => {
             {/* Action Buttons */}
             <div className="flex items-center space-x-3">
               {/* Heart Button */}
-              
-              <Link to="/wishList">
-                <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
-                <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
-
-                {/* Notification Badge */}
-                <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-bold leading-none">3</span>
-                </div>
-                </Button>
-              </Link>
-
-
-              {/* Shopping Bag Button */}
-              <Link to="/cart">
-                <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
-                  <ShoppingBag className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
-
-                  {/* Cart Badge */}
-                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center animate-pulse">
-                    <span className="text-xs text-white font-bold leading-none">2</span>
-                  </div>
-                </Button>
-              </Link>
-
-                {isLogin ? (
+              {isLogin  && !isAdmin && (
+                <Link to="/wishList">
                   <Button
-                variant="ghost"
-                size="icon"
-                className=" hidden lg:flex relative group rounded-xl hover:bg-pink-50"
-                onClick={() => setIsProfileMenu(!isProfileMenu)}
-              >
+                    variant="ghost"
+                    size="icon"
+                    className="relative group rounded-xl hover:bg-pink-50"
+                  >
+                    <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-xs text-white font-bold leading-none">
+                        3
+                      </span>
+                    </div>
+                  </Button>
+                </Link>
+              )}
+
+              {isLogin  && !isAdmin && (
+                <Link to="/cart">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative group rounded-xl hover:bg-pink-50"
+                  >
+                    <ShoppingBag className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center animate-pulse">
+                      <span className="text-xs text-white font-bold leading-none">
+                        2
+                      </span>
+                    </div>
+                  </Button>
+                </Link>
+              )}
+
+              {isLogin ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className=" hidden lg:flex relative group rounded-xl hover:bg-pink-50"
+                  onClick={() => setIsProfileMenu(!isProfileMenu)}
+                >
                   <User className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
-              </Button>
-                ):(
-                  <Button variant="ghost" size="icon" className="hidden lg:flex  relative group rounded-xl hover:bg-pink-50">
-                  <LogIn className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
                 </Button>
-                )}
-
-               
+              ) : (
+                <Link to="/login">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden lg:flex  relative group rounded-xl hover:bg-pink-50"
+                  >
+                    <LogIn className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+                  </Button>
+                </Link>
+              )}
 
               {/* Mobile Menu Button */}
               <Button
@@ -153,24 +193,33 @@ const FloatingNavbar = () => {
             </div>
           </div>
 
-           <div
+          <div
             className={`hidden lg:block overflow-hidden transition-all duration-500 ease-out ${
               isProfileMenu ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
             <div className="px-6 py-4 border-t border-white/20 mt-4">
               <div className="space-y-3">
-                {profileIcons.map((item, index) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    onClick={() => setIsProfileMenu(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                {profileIcons.map((item, index) =>
+                  item.action ? (
+                    <button
+                      key={item.name}
+                      onClick={item.action}
+                      className="w-full text-left px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                    >
+                      {item.name}
+                    </button>
+                  ) : (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                      onClick={() => setIsProfileMenu(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -195,8 +244,7 @@ const FloatingNavbar = () => {
                   </Link>
                 ))}
                 {!isLogin ? (
-                   <Link
-                   
+                  <Link
                     to="/login"
                     className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
                     style={{ animationDelay: `${5 * 0.1}s` }}
@@ -204,28 +252,37 @@ const FloatingNavbar = () => {
                   >
                     Login
                   </Link>
-                ):(<>
-                  {profileIcons.map((item, index) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {console.log(item)}
-                    {item.name}
-                  </Link>
-                ))}
-                </>)}
+                ) : (
+                  <>
+                    {profileIcons.map((item, index) =>
+                      item.action ? (
+                        <button
+                          key={item.name}
+                          onClick={item.action}
+                          className="w-full text-left px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                        >
+                          {item.name}
+                        </button>
+                      ) : (
+                        <Link
+                          key={item.name}
+                          to={item.href}
+                          className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                          onClick={() => setIsProfileMenu(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      )
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
     </nav>
-  )
+  );
+};
 
-}
-
-export default FloatingNavbar
+export default FloatingNavbar;

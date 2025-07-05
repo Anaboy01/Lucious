@@ -10,8 +10,7 @@ import {
 
 const Reviews = ({ reviews }) => {
   const [userReview, setUserReview] = useState("")
-  const [userName, setUserName] = useState("")
-  const [userPhoto, setUserPhoto] = useState("")
+
 
   const [allReviews, setAllReviews] = useState(reviews)
   const [currentPage, setCurrentPage] = useState(1)
@@ -27,22 +26,21 @@ const Reviews = ({ reviews }) => {
   const handleReviewSubmit = () => {
     const newReview = {
       userId: allReviews.length + 1,
-      userName,
-      userPhoto,
       review: userReview,
     }
 
     setAllReviews((prev) => [newReview, ...prev])
     setUserReview("")
-    setUserName("")
-    setUserPhoto("")
     setCurrentPage(1) // move to first page when a new review is added
   }
 
   return (
     <div className="mt-16 border-t pt-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Customer Reviews</h2>
+       <div className="flex items-center gap-2">
+         <h2 className="text-2xl font-bold">Customer Reviews</h2>
+         <span>({reviews.length})</span>
+       </div>
 
         <Dialog>
           <DialogTrigger asChild>
@@ -53,20 +51,6 @@ const Reviews = ({ reviews }) => {
               <DialogTitle>Add Your Review</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Your name"
-                className="w-full border rounded px-4 py-2"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Photo URL (optional)"
-                className="w-full border rounded px-4 py-2"
-                value={userPhoto}
-                onChange={(e) => setUserPhoto(e.target.value)}
-              />
               <textarea
                 placeholder="Write your review..."
                 className="w-full border rounded px-4 py-2"

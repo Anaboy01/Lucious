@@ -7,6 +7,9 @@ import WishList from './pages/WishList'
 import Product from './pages/Product'
 import Products from './pages/Products'
 import Admin from './pages/Admin'
+import TestPage from './pages/DomPage'
+import AuthPage from './pages/AuthPage'
+import "react-toastify/dist/ReactToastify.css"
 
 
 const App = () => {
@@ -19,6 +22,11 @@ const App = () => {
       <Route path='/product/:id' element={<Product/>} />
       <Route path='/products' element={<Products/>} />
       <Route path='/admin' element={<Admin/>} />
+      <Route path='/dom' element={<TestPage/>} />
+    <Route path="/login" element={<AuthPage mode="login" />} />
+    <Route path="/register" element={<AuthPage mode="register" />} />
+
+      
     
     </Routes>
   )

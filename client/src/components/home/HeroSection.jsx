@@ -13,7 +13,6 @@ const HeroSection = () => {
         <img
           src="/hero-model.png"
           alt="Elegant woman in wine lingerie"
-          fill
           className="w-full h-full object-cover object-center transition-transform duration-1000 ease-out"
         
           style={{ transform: "scale(1.1)" }}

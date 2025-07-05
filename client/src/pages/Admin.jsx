@@ -1,15 +1,34 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Plus,
   Package,
@@ -28,24 +47,23 @@ import {
   Heart,
   X,
   Upload,
-} from "lucide-react"
-import { Link } from "react-router-dom"
-import PageHeader from "@/components/categories/PageHeader"
-
-
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import PageHeader from "@/components/categories/PageHeader";
+import { useApp } from "@/context/AppContext";
 
 const Admin = () => {
-const [searchTerm, setSearchTerm] = useState("")
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false)
-  const [isEditProductOpen, setIsEditProductOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const { customers } = useApp();
 
-  // Sample data
   const stats = {
     totalRevenue: 45678000.9,
     totalOrders: 234,
     totalProducts: 89,
-    totalCustomers: 1456,
-  }
+    totalCustomers: customers.length,
+  };
 
   const recentOrders = [
     {
@@ -84,7 +102,7 @@ const [searchTerm, setSearchTerm] = useState("")
       date: "2024-01-12",
       items: 1,
     },
-  ]
+  ];
 
   const products = [
     {
@@ -127,44 +145,44 @@ const [searchTerm, setSearchTerm] = useState("")
       image: "/placeholder.svg?height=100&width=100",
       sales: 15,
     },
-  ]
+  ];
 
   const getStatusVariant = (status) => {
     switch (status) {
       case "pending":
-        return "secondary"
+        return "secondary";
       case "processing":
-        return "default"
+        return "default";
       case "shipped":
-        return "outline"
+        return "outline";
       case "delivered":
-        return "default"
+        return "default";
       case "cancelled":
-        return "destructive"
+        return "destructive";
       default:
-        return "secondary"
+        return "secondary";
     }
-  }
+  };
 
   const getProductStatusVariant = (status) => {
     switch (status) {
       case "active":
-        return "default"
+        return "default";
       case "low_stock":
-        return "secondary"
+        return "secondary";
       case "out_of_stock":
-        return "destructive"
+        return "destructive";
       case "inactive":
-        return "outline"
+        return "outline";
       default:
-        return "secondary"
+        return "secondary";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
       {/* Header */}
-      <PageHeader/>
+      <PageHeader />
 
       <div className="container mx-auto p-6">
         <Tabs defaultValue="overview" className="space-y-6">
@@ -178,7 +196,9 @@ const [searchTerm, setSearchTerm] = useState("")
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Dashboard Overview
+              </h2>
               <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
                 <Download className="w-4 h-4 mr-2" />
                 Export Report
@@ -189,45 +209,67 @@ const [searchTerm, setSearchTerm] = useState("")
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Revenue
+                  </CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">₦{stats.totalRevenue.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                  <div className="text-2xl font-bold">
+                    ₦{stats.totalRevenue.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    +20.1% from last month
+                  </p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Orders
+                  </CardTitle>
                   <ShoppingCart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.totalOrders}</div>
-                  <p className="text-xs text-muted-foreground">+12% from last month</p>
+                  <p className="text-xs text-muted-foreground">
+                    +12% from last month
+                  </p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Products
+                  </CardTitle>
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalProducts}</div>
-                  <p className="text-xs text-muted-foreground">+3 new this week</p>
+                  <div className="text-2xl font-bold">
+                    {stats.totalProducts}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    +3 new this week
+                  </p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Customers
+                  </CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalCustomers}</div>
-                  <p className="text-xs text-muted-foreground">+15% from last month</p>
+                  <div className="text-2xl font-bold">
+                    {stats.totalCustomers}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    +15% from last month
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -251,11 +293,15 @@ const [searchTerm, setSearchTerm] = useState("")
                   <TableBody>
                     {recentOrders.slice(0, 5).map((order) => (
                       <TableRow key={order.id}>
-                        <TableCell className="font-medium">{order.id}</TableCell>
+                        <TableCell className="font-medium">
+                          {order.id}
+                        </TableCell>
                         <TableCell>{order.customer}</TableCell>
                         <TableCell>₦{order.total}</TableCell>
                         <TableCell>
-                          <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
+                          <Badge variant={getStatusVariant(order.status)}>
+                            {order.status}
+                          </Badge>
                         </TableCell>
                         <TableCell>{order.date}</TableCell>
                       </TableRow>
@@ -269,8 +315,13 @@ const [searchTerm, setSearchTerm] = useState("")
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold text-gray-900">Products Management</h2>
-              <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Products Management
+              </h2>
+              <Dialog
+                open={isAddProductOpen}
+                onOpenChange={setIsAddProductOpen}
+              >
                 <DialogTrigger asChild>
                   <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
                     <Plus className="w-4 h-4 mr-2" />
@@ -291,7 +342,11 @@ const [searchTerm, setSearchTerm] = useState("")
 
                       <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" placeholder="Enter product description" rows={4} />
+                        <Textarea
+                          id="description"
+                          placeholder="Enter product description"
+                          rows={4}
+                        />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -301,7 +356,11 @@ const [searchTerm, setSearchTerm] = useState("")
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="compare-price">Compare Price</Label>
-                          <Input id="compare-price" type="number" placeholder="0.00" />
+                          <Input
+                            id="compare-price"
+                            type="number"
+                            placeholder="0.00"
+                          />
                         </div>
                       </div>
 
@@ -339,18 +398,35 @@ const [searchTerm, setSearchTerm] = useState("")
                         <Label>Product Images</Label>
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                           <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                          <p className="text-gray-600">Drop images here or click to upload</p>
-                          <p className="text-sm text-gray-400">PNG, JPG up to 10MB</p>
+                          <p className="text-gray-600">
+                            Drop images here or click to upload
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            PNG, JPG up to 10MB
+                          </p>
                         </div>
                       </div>
 
                       <div className="space-y-2">
                         <Label>Available Colors</Label>
                         <div className="grid grid-cols-2 gap-2">
-                          {["Rose Pink", "Wine Red", "Blush", "Deep Rose", "Black", "White"].map((color) => (
-                            <div key={color} className="flex items-center space-x-2">
+                          {[
+                            "Rose Pink",
+                            "Wine Red",
+                            "Blush",
+                            "Deep Rose",
+                            "Black",
+                            "White",
+                          ].map((color) => (
+                            <div
+                              key={color}
+                              className="flex items-center space-x-2"
+                            >
                               <Checkbox id={`color-${color}`} />
-                              <Label htmlFor={`color-${color}`} className="text-sm">
+                              <Label
+                                htmlFor={`color-${color}`}
+                                className="text-sm"
+                              >
                                 {color}
                               </Label>
                             </div>
@@ -362,9 +438,15 @@ const [searchTerm, setSearchTerm] = useState("")
                         <Label>Available Sizes</Label>
                         <div className="grid grid-cols-3 gap-2">
                           {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
-                            <div key={size} className="flex items-center space-x-2">
+                            <div
+                              key={size}
+                              className="flex items-center space-x-2"
+                            >
                               <Checkbox id={`size-${size}`} />
-                              <Label htmlFor={`size-${size}`} className="text-sm">
+                              <Label
+                                htmlFor={`size-${size}`}
+                                className="text-sm"
+                              >
                                 {size}
                               </Label>
                             </div>
@@ -374,10 +456,15 @@ const [searchTerm, setSearchTerm] = useState("")
                     </div>
                   </div>
                   <div className="flex justify-end space-x-2 pt-4">
-                    <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsAddProductOpen(false)}
+                    >
                       Cancel
                     </Button>
-                    <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">Save Product</Button>
+                    <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
+                      Save Product
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -439,7 +526,9 @@ const [searchTerm, setSearchTerm] = useState("")
                         <TableCell>{product.stock}</TableCell>
                         <TableCell>{product.sales}</TableCell>
                         <TableCell>
-                          <Badge variant={getProductStatusVariant(product.status)}>
+                          <Badge
+                            variant={getProductStatusVariant(product.status)}
+                          >
                             {product.status.replace("_", " ")}
                           </Badge>
                         </TableCell>
@@ -448,7 +537,10 @@ const [searchTerm, setSearchTerm] = useState("")
                             <Button size="sm" variant="ghost">
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+                            <Dialog
+                              open={isEditProductOpen}
+                              onOpenChange={setIsEditProductOpen}
+                            >
                               <DialogTrigger asChild>
                                 <Button size="sm" variant="ghost">
                                   <Edit className="w-4 h-4" />
@@ -462,12 +554,19 @@ const [searchTerm, setSearchTerm] = useState("")
                                   {/* Edit Product Form - Pre-filled */}
                                   <div className="space-y-4">
                                     <div className="space-y-2">
-                                      <Label htmlFor="edit-name">Product Name</Label>
-                                      <Input id="edit-name" defaultValue="Silk Dreams Bra Set" />
+                                      <Label htmlFor="edit-name">
+                                        Product Name
+                                      </Label>
+                                      <Input
+                                        id="edit-name"
+                                        defaultValue="Silk Dreams Bra Set"
+                                      />
                                     </div>
 
                                     <div className="space-y-2">
-                                      <Label htmlFor="edit-description">Description</Label>
+                                      <Label htmlFor="edit-description">
+                                        Description
+                                      </Label>
                                       <Textarea
                                         id="edit-description"
                                         defaultValue="Luxurious silk bra set with delicate lace details."
@@ -477,53 +576,96 @@ const [searchTerm, setSearchTerm] = useState("")
 
                                     <div className="grid grid-cols-2 gap-4">
                                       <div className="space-y-2">
-                                        <Label htmlFor="edit-price">Price</Label>
-                                        <Input id="edit-price" type="number" defaultValue="89.99" />
+                                        <Label htmlFor="edit-price">
+                                          Price
+                                        </Label>
+                                        <Input
+                                          id="edit-price"
+                                          type="number"
+                                          defaultValue="89.99"
+                                        />
                                       </div>
                                       <div className="space-y-2">
-                                        <Label htmlFor="edit-compare-price">Compare Price</Label>
-                                        <Input id="edit-compare-price" type="number" defaultValue="120.00" />
+                                        <Label htmlFor="edit-compare-price">
+                                          Compare Price
+                                        </Label>
+                                        <Input
+                                          id="edit-compare-price"
+                                          type="number"
+                                          defaultValue="120.00"
+                                        />
                                       </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                      <Label htmlFor="edit-category">Category</Label>
+                                      <Label htmlFor="edit-category">
+                                        Category
+                                      </Label>
                                       <Select defaultValue="bras">
                                         <SelectTrigger>
                                           <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="bras">Bras</SelectItem>
-                                          <SelectItem value="panties">Panties</SelectItem>
-                                          <SelectItem value="sets">Sets</SelectItem>
-                                          <SelectItem value="sleepwear">Sleepwear</SelectItem>
-                                          <SelectItem value="lingerie">Lingerie</SelectItem>
+                                          <SelectItem value="bras">
+                                            Bras
+                                          </SelectItem>
+                                          <SelectItem value="panties">
+                                            Panties
+                                          </SelectItem>
+                                          <SelectItem value="sets">
+                                            Sets
+                                          </SelectItem>
+                                          <SelectItem value="sleepwear">
+                                            Sleepwear
+                                          </SelectItem>
+                                          <SelectItem value="lingerie">
+                                            Lingerie
+                                          </SelectItem>
                                         </SelectContent>
                                       </Select>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                       <div className="space-y-2">
-                                        <Label htmlFor="edit-stock">Stock Quantity</Label>
-                                        <Input id="edit-stock" type="number" defaultValue="25" />
+                                        <Label htmlFor="edit-stock">
+                                          Stock Quantity
+                                        </Label>
+                                        <Input
+                                          id="edit-stock"
+                                          type="number"
+                                          defaultValue="25"
+                                        />
                                       </div>
                                       <div className="space-y-2">
                                         <Label htmlFor="edit-sku">SKU</Label>
-                                        <Input id="edit-sku" defaultValue="SLK-BRA-001" />
+                                        <Input
+                                          id="edit-sku"
+                                          defaultValue="SLK-BRA-001"
+                                        />
                                       </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                      <Label htmlFor="edit-status">Status</Label>
+                                      <Label htmlFor="edit-status">
+                                        Status
+                                      </Label>
                                       <Select defaultValue="active">
                                         <SelectTrigger>
                                           <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="active">Active</SelectItem>
-                                          <SelectItem value="inactive">Inactive</SelectItem>
-                                          <SelectItem value="low_stock">Low Stock</SelectItem>
-                                          <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                                          <SelectItem value="active">
+                                            Active
+                                          </SelectItem>
+                                          <SelectItem value="inactive">
+                                            Inactive
+                                          </SelectItem>
+                                          <SelectItem value="low_stock">
+                                            Low Stock
+                                          </SelectItem>
+                                          <SelectItem value="out_of_stock">
+                                            Out of Stock
+                                          </SelectItem>
                                         </SelectContent>
                                       </Select>
                                     </div>
@@ -559,42 +701,73 @@ const [searchTerm, setSearchTerm] = useState("")
                                     <div className="space-y-2">
                                       <Label>Available Colors</Label>
                                       <div className="grid grid-cols-2 gap-2">
-                                        {["Rose Pink", "Wine Red", "Blush", "Deep Rose", "Black", "White"].map(
-                                          (color) => (
-                                            <div key={color} className="flex items-center space-x-2">
-                                              <Checkbox
-                                                id={`edit-color-${color}`}
-                                                defaultChecked={["Rose Pink", "Wine Red", "Blush"].includes(color)}
-                                              />
-                                              <Label htmlFor={`edit-color-${color}`} className="text-sm">
-                                                {color}
-                                              </Label>
-                                            </div>
-                                          ),
-                                        )}
+                                        {[
+                                          "Rose Pink",
+                                          "Wine Red",
+                                          "Blush",
+                                          "Deep Rose",
+                                          "Black",
+                                          "White",
+                                        ].map((color) => (
+                                          <div
+                                            key={color}
+                                            className="flex items-center space-x-2"
+                                          >
+                                            <Checkbox
+                                              id={`edit-color-${color}`}
+                                              defaultChecked={[
+                                                "Rose Pink",
+                                                "Wine Red",
+                                                "Blush",
+                                              ].includes(color)}
+                                            />
+                                            <Label
+                                              htmlFor={`edit-color-${color}`}
+                                              className="text-sm"
+                                            >
+                                              {color}
+                                            </Label>
+                                          </div>
+                                        ))}
                                       </div>
                                     </div>
 
                                     <div className="space-y-2">
                                       <Label>Available Sizes</Label>
                                       <div className="grid grid-cols-3 gap-2">
-                                        {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
-                                          <div key={size} className="flex items-center space-x-2">
-                                            <Checkbox
-                                              id={`edit-size-${size}`}
-                                              defaultChecked={["S", "M", "L", "XL"].includes(size)}
-                                            />
-                                            <Label htmlFor={`edit-size-${size}`} className="text-sm">
-                                              {size}
-                                            </Label>
-                                          </div>
-                                        ))}
+                                        {["XS", "S", "M", "L", "XL", "XXL"].map(
+                                          (size) => (
+                                            <div
+                                              key={size}
+                                              className="flex items-center space-x-2"
+                                            >
+                                              <Checkbox
+                                                id={`edit-size-${size}`}
+                                                defaultChecked={[
+                                                  "S",
+                                                  "M",
+                                                  "L",
+                                                  "XL",
+                                                ].includes(size)}
+                                              />
+                                              <Label
+                                                htmlFor={`edit-size-${size}`}
+                                                className="text-sm"
+                                              >
+                                                {size}
+                                              </Label>
+                                            </div>
+                                          )
+                                        )}
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                                 <div className="flex justify-end space-x-2 pt-4">
-                                  <Button variant="outline" onClick={() => setIsEditProductOpen(false)}>
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setIsEditProductOpen(false)}
+                                  >
                                     Cancel
                                   </Button>
                                   <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
@@ -619,7 +792,9 @@ const [searchTerm, setSearchTerm] = useState("")
           {/* Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold text-gray-900">Orders Management</h2>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Orders Management
+              </h2>
               <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
                 <Download className="w-4 h-4 mr-2" />
                 Export Orders
@@ -669,11 +844,15 @@ const [searchTerm, setSearchTerm] = useState("")
                   <TableBody>
                     {recentOrders.map((order) => (
                       <TableRow key={order.id}>
-                        <TableCell className="font-medium">{order.id}</TableCell>
+                        <TableCell className="font-medium">
+                          {order.id}
+                        </TableCell>
                         <TableCell>{order.customer}</TableCell>
                         <TableCell>{order.email}</TableCell>
                         <TableCell>{order.items}</TableCell>
-                        <TableCell className="font-medium">₦{order.total}</TableCell>
+                        <TableCell className="font-medium">
+                          ₦{order.total}
+                        </TableCell>
                         <TableCell>
                           <Select defaultValue={order.status}>
                             <SelectTrigger className="w-[120px]">
@@ -681,10 +860,16 @@ const [searchTerm, setSearchTerm] = useState("")
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="processing">Processing</SelectItem>
+                              <SelectItem value="processing">
+                                Processing
+                              </SelectItem>
                               <SelectItem value="shipped">Shipped</SelectItem>
-                              <SelectItem value="delivered">Delivered</SelectItem>
-                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                              <SelectItem value="delivered">
+                                Delivered
+                              </SelectItem>
+                              <SelectItem value="cancelled">
+                                Cancelled
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
@@ -708,30 +893,48 @@ const [searchTerm, setSearchTerm] = useState("")
           </TabsContent>
 
           {/* Customers Tab */}
+          {/* Customers Tab */}
           <TabsContent value="customers" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold text-gray-900">Customer Management</h2>
-              <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
-                <Download className="w-4 h-4 mr-2" />
-                Export Customers
-              </Button>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Customer Management
+              </h2>
+              <div className="text-pink-700 font-semibold text-lg">
+                Total Customers: {customers?.length || 0}
+              </div>
             </div>
 
             <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
-              <CardContent className="p-6">
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-600 mb-2">Customer Management</h3>
-                  <p className="text-gray-500">Customer management features coming soon...</p>
-                </div>
+              <CardContent className="p-6 overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Customer Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Customer ID</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {customers?.map((customer) => (
+                      <TableRow key={customer._id}>
+                        <TableCell className="font-medium">
+                          {customer.name}
+                        </TableCell>
+                        <TableCell>{customer.email}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {customer._id}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
     </div>
-  )
+  );
+};
 
-}
-
-export default Admin
+export default Admin;

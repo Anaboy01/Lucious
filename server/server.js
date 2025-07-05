@@ -7,16 +7,16 @@ const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const wishRoutes = require("./routes/wishRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-// const cors = require("cors");
+const cors = require("cors");
 
 dotenv.config();
 const app = express();
 
 // Enable CORS for all origins
-// app.use(cors({
-//   origin: 'http://localhost:5173',
-//   credentials: true
-// }));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
 // Middlewares
 app.use(express.json());

@@ -2,12 +2,16 @@ import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
 import { Heart, ShoppingBag, Menu, X, User, LayoutDashboard, LogIn } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useApp } from "@/context/AppContext";
 
 
 const PageHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileMenu, setIsProfileMenu] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
+  const { loggedIn, user, logout } = useApp();
+  
+    const isAdmin = user?.isAdmin;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,10 +30,20 @@ const PageHeader = () => {
     { name: "Sleepwear", href: "#" },
   ]
 
-    const profileIcons = [
-    { name: "DashBoard", href: "#" },
-    { name: "Logout", href: "/category/bras" },
-  ]
+
+  const handleLogout = async () => {
+    await logout();
+    setIsProfileMenu(false);
+  };
+
+  const profileIcons = [
+    ...(isAdmin ? [{ name: "Dashboard", href: "/admin" }] : []),
+    { name: "Logout", action: handleLogout },
+  ];
+
+  useEffect(() => {
+    setIsLogin(loggedIn);
+  }, [loggedIn]);
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-pink-200 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
@@ -41,8 +55,8 @@ const PageHeader = () => {
                 <img
                   src="/logo.png"
                   alt="Luscious Lingerie Logo"
-                  width={100 }
-                  height={50 }
+                  width={80 }
+                  height={40 }
                   className="relative object-contain transition-all duration-500 group-hover:scale-105"
                 />
               </div>
@@ -73,32 +87,41 @@ const PageHeader = () => {
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-3">
-              {/* Heart Button */}
+                 {isLogin  && !isAdmin && (
                 <Link to="/wishList">
-                <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
-                <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative group rounded-xl hover:bg-pink-50"
+                  >
+                    <Heart className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-xs text-white font-bold leading-none">
+                        3
+                      </span>
+                    </div>
+                  </Button>
+                </Link>
+              )}
 
-                {/* Notification Badge */}
-                <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-bold leading-none">3</span>
-                </div>
-                </Button>
-              </Link>
-
-
-              {/* Shopping Bag Button */}
-              <Link to="/cart">
-                <Button variant="ghost" size="icon" className="relative group rounded-xl hover:bg-pink-50">
-                  <ShoppingBag className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
-
-                  {/* Cart Badge */}
-                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center animate-pulse">
-                    <span className="text-xs text-white font-bold leading-none">2</span>
-                  </div>
-                </Button>
-              </Link>
+              {isLogin  && !isAdmin && (
+                <Link to="/cart">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative group rounded-xl hover:bg-pink-50"
+                  >
+                    <ShoppingBag className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center animate-pulse">
+                      <span className="text-xs text-white font-bold leading-none">
+                        2
+                      </span>
+                    </div>
+                  </Button>
+                </Link>
+              )}
 
                 {isLogin ? (
                   <Button
@@ -143,17 +166,26 @@ const PageHeader = () => {
           >
             <div className="px-6 py-4 border-t border-white/20 mt-4">
               <div className="space-y-3">
-                {profileIcons.map((item, index) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    onClick={() => setIsProfileMenu(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                {profileIcons.map((item, index) =>
+                  item.action ? (
+                    <button
+                      key={item.name}
+                      onClick={item.action}
+                      className="w-full text-left px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                    >
+                      {item.name}
+                    </button>
+                  ) : (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                      onClick={() => setIsProfileMenu(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -188,18 +220,26 @@ const PageHeader = () => {
                     Login
                   </Link>
                 ):(<>
-                  {profileIcons.map((item, index) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {console.log(item)}
-                    {item.name}
-                  </Link>
-                ))}
+                  {profileIcons.map((item, index) =>
+                  item.action ? (
+                    <button
+                      key={item.name}
+                      onClick={item.action}
+                      className="w-full text-left px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                    >
+                      {item.name}
+                    </button>
+                  ) : (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="block px-4 py-3 text-gray-700 font-medium rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 hover:text-pink-600 transform hover:translate-x-2"
+                      onClick={() => setIsProfileMenu(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                )}
                 </>)}
               </div>
             </div>

@@ -182,7 +182,7 @@ const LoadingScreen = ({ onComplete, duration = 5000 }) => {
       </div>
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style >{`
         @keyframes elegantSpin {
           0% {
             transform: rotate(0deg) scale(1);
