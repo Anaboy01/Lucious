@@ -10,6 +10,7 @@ import Admin from './pages/Admin'
 import TestPage from './pages/DomPage'
 import AuthPage from './pages/AuthPage'
 import "react-toastify/dist/ReactToastify.css"
+import BulkReg from './pages/BulkReg'
 
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
       <Route path='/dom' element={<TestPage/>} />
     <Route path="/login" element={<AuthPage mode="login" />} />
     <Route path="/register" element={<AuthPage mode="register" />} />
+    <Route path="/bulk" element={<BulkReg/>} />
 
       
     
