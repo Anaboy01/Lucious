@@ -59,6 +59,8 @@ const Admin = () => {
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const { customers } = useApp();
 
+ 
+
 
     const emptyProd = {
     name: "",
