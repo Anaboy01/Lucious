@@ -19,7 +19,7 @@ export const registerBulkProduct = async (products) => {
 };
 
 export const reviewProduct = async (id, review) => {
-  const response = await axios.post(`${API_URL}/products/review/${id}`, review, {
+  const response = await axios.post(`${API_URL}/products/review/${id}`, {review}, {
     withCredentials: true, 
   });
   
@@ -39,6 +39,7 @@ export const allProducts = async () => {
     withCredentials: true, 
   });
   
+  
   return response.data;
 };
 
@@ -47,6 +48,15 @@ export const getAProduct = async (id) => {
   const response = await axios.get(`${API_URL}/products/${id}`, {
     withCredentials: true, 
   });
+ 
+  
+  return response.data;
+};
+export const getCategories = async (category) => {
+  const response = await axios.get(`${API_URL}/products/categories/${category}`, {
+    withCredentials: true, 
+  });
+ 
   
   return response.data;
 };

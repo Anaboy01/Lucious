@@ -17,7 +17,7 @@ const ProductToolbar = ({
   return (
     <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
       <CardContent className="p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 lg:flex-row items-start lg:items-center justify-between ">
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">{totalProducts} products</span>
             <div className="flex items-center space-x-2">

@@ -1,6 +1,14 @@
 import { Button } from "../ui/button";
 import { useState, useEffect, use } from "react";
 import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import {
   Heart,
   ShoppingBag,
   Menu,
@@ -11,6 +19,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
+import { useWish } from "@/context/WishContext";
+import { useCart } from "@/context/CartContext";
+
 
 const FloatingNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -19,6 +30,10 @@ const FloatingNavbar = () => {
   const [isLogin, setIsLogin] = useState(false);
 
   const { loggedIn, user, logout } = useApp();
+  const {wishList} = useWish();
+  const {cart} = useCart()
+
+  
 
   const isAdmin = user?.isAdmin;
 
@@ -128,7 +143,7 @@ const FloatingNavbar = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
                     <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
                       <span className="text-xs text-white font-bold leading-none">
-                        3
+                        {wishList.length}
                       </span>
                     </div>
                   </Button>
@@ -146,35 +161,55 @@ const FloatingNavbar = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
                     <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center animate-pulse">
                       <span className="text-xs text-white font-bold leading-none">
-                        2
+                      {cart.length}
                       </span>
                     </div>
                   </Button>
                 </Link>
               )}
 
-              {isLogin ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className=" hidden lg:flex relative group rounded-xl hover:bg-pink-50"
-                  onClick={() => setIsProfileMenu(!isProfileMenu)}
-                >
-                  <User className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
-                </Button>
-              ) : (
-                <Link to="/login">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hidden lg:flex  relative group rounded-xl hover:bg-pink-50"
-                  >
-                    <LogIn className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
-                  </Button>
-                </Link>
-              )}
+{isLogin ? (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hidden lg:flex relative group rounded-xl hover:bg-pink-50"
+      >
+        <User className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent className="w-44 rounded-xl border border-pink-100 bg-white/80 backdrop-blur-lg shadow-lg mt-2">
+      <DropdownMenuLabel className="text-pink-600 font-semibold">My Account</DropdownMenuLabel>
+      <DropdownMenuSeparator className="bg-pink-100" />
+      {isAdmin && (
+        <Link to="/admin">
+          <DropdownMenuItem className="group text-gray-700 hover:text-pink-600 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 transition-all duration-300 rounded-lg">
+            Dashboard
+          </DropdownMenuItem>
+        </Link>
+      )}
+      <DropdownMenuItem
+        onClick={handleLogout}
+        className="group text-gray-700 hover:text-pink-600 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 transition-all duration-300 rounded-lg"
+      >
+        Logout
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+) : (
+  <Link to="/login">
+    <Button
+      variant="ghost"
+      size="icon"
+      className="hidden lg:flex relative group rounded-xl hover:bg-pink-50"
+    >
+      <LogIn className="w-5 h-5 text-gray-700 group-hover:text-pink-600 transition-colors duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm"></div>
+    </Button>
+  </Link>
+)}
 
               {/* Mobile Menu Button */}
               <Button

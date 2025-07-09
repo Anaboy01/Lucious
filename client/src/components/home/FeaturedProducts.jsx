@@ -1,49 +1,14 @@
+import { useProduct } from "@/context/ProductContext";
 import ProductCard from "../ui/ProductCard";
+import { useEffect, useState } from "react";
 
 
 const FeaturedProducts = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Silk Dreams Bra Set",
-      price: 5000099,
-      originalPrice: 30000000,
-      image: "/silkDream.png",
-      rating: 4.8,
-      reviews: 124,
-      isNew: true,
-    },
-    {
-      id: 2,
-      name: "Lace Whisper Collection",
-      price: 250000,
-      originalPrice: 75000.00,
-      image: "/laceWhisper.png",
-      rating: 4.9,
-      reviews: 89,
-      isNew: false,
-    },
-    {
-      id: 3,
-      name: "Velvet Rose Lingerie",
-      price: 50000,
-      originalPrice: 130000,
-      image: "/velvetRose.png",
-      rating: 4.7,
-      reviews: 156,
-      isNew: true,
-    },
-    {
-      id: 4,
-      name: "Midnight Elegance Set",
-      price: 78000,
-      originalPrice: 105000,
-      image: "/midNight.png",
-      rating: 4.8,
-      reviews: 203,
-      isNew: false,
-    },
-  ]
+  const [featuredProducts, setFeaturedProducts]= useState([])
+ const {products} = useProduct()
+ useEffect(() => {
+  setFeaturedProducts(products)
+ },[products])
 
   return (
     <section className="py-16 px-4 animate-fadeInUp" style={{ animationDelay: "1.4s" }}>
@@ -56,9 +21,13 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
-          ))}
+          {[...featuredProducts]
+  .sort(() => 0.5 - Math.random()) // shuffle array
+  .slice(0, 4) // take only 4
+  .map((product, index) => (
+    <ProductCard key={product.id} product={product} index={index} />
+))}
+
         </div>
       </div>
     </section>

@@ -1,14 +1,14 @@
-import BreadCrumb from "@/components/categories/BreadCrumb"
+
 import PageHeader from "@/components/categories/PageHeader"
-import FloatingNavbar from "@/components/home/FloatingNavbar"
 import Pagination from "@/components/products/Pagination"
 import ProductFilters from "@/components/products/ProductFilters"
 import ProductGrid from "@/components/products/ProductGrid"
 import ProductSearch from "@/components/products/ProductSearch"
 import ProductToolbar from "@/components/products/ProductToolbar"
 import { Button } from "@/components/ui/button"
+import { useProduct } from "@/context/ProductContext"
 import { X } from "lucide-react"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 
 
 const Products = () => {
@@ -22,13 +22,10 @@ const Products = () => {
     colors: [],
     sizes: [],
     brands: [],
-    priceRange: [0, 250000],
+    priceRange: [0, 1000000],
   })
-
-  const itemsPerPage = 9
-
-  // Mock products data - in real app this would come from API
-  const allProducts = [
+  const [allProducts, setAllProducts] = useState(
+     [
     {
       id: 1,
       name: "Silk Dreams Bra Set",
@@ -211,6 +208,17 @@ const Products = () => {
     },
   ]
 
+  )
+
+ const  {products} = useProduct()
+
+
+  const itemsPerPage = 9
+
+  
+useEffect(() => {
+  setAllProducts(products)
+},[products])
 
 
   // Filter and search products
@@ -222,8 +230,7 @@ const Products = () => {
       filtered = filtered.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.category.toLowerCase().includes(searchTerm.toLowerCase()) 
       )
     }
 
@@ -232,28 +239,29 @@ const Products = () => {
       filtered = filtered.filter((product) => product.category === filters.category)
     }
 
-    // Color filter
-    if (filters.colors.length > 0) {
-      filtered = filtered.filter((product) => product.colors.some((color) => filters.colors.includes(color)))
-    }
+   
 
     // Size filter
     if (filters.sizes.length > 0) {
-      filtered = filtered.filter((product) => product.sizes.some((size) => filters.sizes.includes(size)))
+      filtered = filtered.filter((product) =>
+  product.sizes.some((s) => filters.sizes.includes(s.size))
+)
+
     }
 
-    // Brand filter
-    if (filters.brands.length > 0) {
-      filtered = filtered.filter((product) => filters.brands.includes(product.brand))
-    }
+
 
     // Price filter
     filtered = filtered.filter(
       (product) => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1],
     )
+   
+    
 
     return filtered
+
   }, [searchTerm, filters, allProducts])
+  
 
   // Sort products
   const sortedProducts = useMemo(() => {
@@ -267,9 +275,9 @@ const Products = () => {
       case "rating":
         return sorted.sort((a, b) => b.rating - a.rating)
       case "newest":
-        return sorted.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0))
+        return sorted.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
       case "popular":
-        return sorted.sort((a, b) => b.reviews - a.reviews)
+        return sorted.sort((a, b) => b.reviews.length - a.reviews.length)
       case "name":
         return sorted.sort((a, b) => a.name.localeCompare(b.name))
       case "featured":

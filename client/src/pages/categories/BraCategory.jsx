@@ -6,9 +6,12 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Grid, List, ChevronDown, ChevronUp } from "lucide-react"
-import { useState } from "react"
+import { use, useEffect, useState } from "react"
 import ProductCard from "@/components/ui/ProductCard"
 import PageHeader from "@/components/categories/PageHeader"
+import { useProduct } from "@/context/ProductContext"
+
+
 
 
 const BraCategory = () => {
@@ -16,8 +19,22 @@ const BraCategory = () => {
   const [sortBy, setSortBy] = useState("featured")
   const [selectedColors, setSelectedColors] = useState([])
   const [selectedSizes, setSelectedSizes] = useState([])
-  const [priceRange, setPriceRange] = useState([0, 250000])
+  const [priceRange, setPriceRange] = useState([0, 1000000])
   const [openSection, setOpenSection] = useState(null)
+  const { fetchProductCategory} = useProduct()
+  const [products, setProducts] = useState(
+    [
+  ]
+  )
+
+  useEffect(() => {
+    const productCategory = async () => {
+      const res = await fetchProductCategory("Bras")
+      setProducts(res)
+    }
+
+    productCategory()
+  },[])
 
   const toggleColor = (color) => {
     setSelectedColors((prev) =>
@@ -31,33 +48,35 @@ const BraCategory = () => {
     )
   }
 
-  const products = [
-    { id: 1, name: "Silk Dreams Bra Set", price: 50000, originalPrice: 120000, image: "/silkBra.png", rating: 4.8, reviews: 124, isNew: true, colors: ["Rose Pink", "Wine Red", "Blush"], sizes: ["S", "M", "L"], dateAdded: "2024-06-01" },
-    { id: 2, name: "Lace Whisper Collection", price: 65000, originalPrice: 85000, image: "/laceBra.png", rating: 4.9, reviews: 89, isNew: false, colors: ["Wine Red", "Deep Rose"], sizes: ["M", "L", "XL"], dateAdded: "2024-05-15" },
-    { id: 3, name: "Velvet Rose Lingerie", price: 95000, originalPrice: 130000, image: "/velvetBra.png", rating: 4.7, reviews: 156, isNew: true, colors: ["Rose Pink", "Blush", "Wine Red"], sizes: ["XS", "S", "M"], dateAdded: "2024-06-10" },
-    { id: 4, name: "Midnight Elegance Set", price: 78000, originalPrice: 105000, image: "/midNightBra.png", rating: 4.8, reviews: 203, isNew: false, colors: ["Wine Red", "Deep Rose"], sizes: ["L", "XL", "XXL"], dateAdded: "2024-04-20" },
-    { id: 5, name: "Rose Garden Bra", price: 72000, originalPrice: 95000, image: "/roseBra.png", rating: 4.6, reviews: 87, isNew: true, colors: ["Rose Pink", "Blush"], sizes: ["S", "M"], dateAdded: "2024-06-25" },
-    { id: 6, name: "Wine Elegance Set", price: 110000, originalPrice: 145000, image: "/wineBra.png", rating: 4.9, reviews: 234, isNew: false, colors: ["Wine Red", "Deep Rose", "Rose Pink"], sizes: ["M", "L", "XL"], dateAdded: "2024-05-05" },
-  ]
 
-  const filteredProducts = products
-    .filter((product) => {
-      return (
-        product.price >= priceRange[0] &&
-        product.price <= priceRange[1] &&
-        (selectedColors.length === 0 || selectedColors.some(color => product.colors.includes(color))) &&
-        (selectedSizes.length === 0 || selectedSizes.some(size => product.sizes.includes(size)))
-      )
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low': return a.price - b.price
-        case 'price-high': return b.price - a.price
-        case 'rating': return b.rating - a.rating
-        case 'newest': return new Date(b.dateAdded) - new Date(a.dateAdded)
-        default: return 0
-      }
-    })
+const filteredProducts = products
+  .filter((product) => {
+    const colorNames = product.colors?.map((c) => c.colorName.toLowerCase()) || [];
+    const sizeLabels = product.sizes?.map((s) => s.size.toLowerCase()) || [];
+
+    return (
+      product.price >= priceRange[0] &&
+      product.price <= priceRange[1] &&
+      (selectedColors.length === 0 || selectedColors.some((color) => colorNames.includes(color.toLowerCase()))) &&
+      (selectedSizes.length === 0 || selectedSizes.some((size) => sizeLabels.includes(size.toLowerCase())))
+    );
+  })
+  .sort((a, b) => {
+    switch (sortBy) {
+      case "price-low":
+        return a.price - b.price;
+      case "price-high":
+        return b.price - a.price;
+      case "rating":
+        return b.rating - a.rating;
+      case "newest":
+        return new Date(b.dateAdded) - new Date(a.dateAdded);
+      default:
+        return 0;
+    }
+  });
+
+
 
   const CollapsibleSection = ({ title, children, sectionKey }) => (
     <Collapsible open={openSection === sectionKey} onOpenChange={() => setOpenSection(openSection === sectionKey ? null : sectionKey)}>
@@ -104,7 +123,7 @@ const BraCategory = () => {
 
                 <CollapsibleSection title="Color" sectionKey="color">
                   <div className="space-y-2">
-                    {"Rose Pink Wine Red Blush Deep Rose".split(" ").map((color) => (
+                    {"blue red green wine blush black brown".split(" ").map((color) => (
                       <div key={color} className="flex items-center space-x-2">
                         <Checkbox id={color} checked={selectedColors.includes(color)} onCheckedChange={() => toggleColor(color)} />
                         <Label htmlFor={color} className="text-sm text-gray-600">{color}</Label>
@@ -119,7 +138,7 @@ const BraCategory = () => {
                   <Slider
                     defaultValue={[1000, 50000]}
                     min={0}
-                    max={250000}
+                    max={1000000}
                     step={1000}
                     value={priceRange}
                     onValueChange={(value) => setPriceRange(value)}

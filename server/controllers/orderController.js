@@ -36,6 +36,8 @@ const placeOrder = asyncHandler(async (req, res) => {
 
     sizeEntry.amountOfSiize -= item.quantity;
 
+   product.sales += item.quantity;
+
   
     const totalStock = product.sizes.reduce((sum, s) => sum + s.amountOfSiize, 0);
     product.stock = totalStock;
@@ -144,6 +146,8 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       if (sizeEntry) {
         sizeEntry.amountOfSiize += item.quantity;
       }
+
+      product.sales -= item.quantity;
 
 
       const totalStock = product.sizes.reduce((sum, s) => sum + s.amountOfSiize, 0);

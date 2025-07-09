@@ -265,7 +265,28 @@ if (alreadyReviewed) {
   });
 });
 
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { category } = req.params;
+
+  if (!category) {
+    res.status(400);
+    throw new Error("Category parameter is required");
+  }
+
+  const products = await Product.find({
+    category: { $regex: new RegExp(`^${category}$`, "i") },
+  });
+
+  if (!products || products.length === 0) {
+    res.status(404);
+    throw new Error(`No products found in category: ${category}`);
+  }
+
+  res.status(200).json(products);
+});
 
 
 
-module.exports = { registerProduct, updateProduct, bulkRegisterProducts, getAllProducts, getAProduct,addProductReview };
+
+
+module.exports = { registerProduct, updateProduct, bulkRegisterProducts, getAllProducts, getAProduct,addProductReview, getProductsByCategory };

@@ -251,7 +251,7 @@ const HeroSection = () => {
       </div>
 
       {/* Custom Styles for Enhanced Animations */}
-      <style jsx>{`
+      <style >{`
     @keyframes gradientShift {
       0%, 100% { 
         filter: hue-rotate(0deg) brightness(1); 

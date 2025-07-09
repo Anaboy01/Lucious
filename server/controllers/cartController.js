@@ -15,7 +15,7 @@ const addToCart = asyncHandler(async (req, res) => {
 
   let cart = await Cart.findOne({ userId });
 
-  // Determine next cartItemId
+
   let nextItemId = 1;
   if (cart && cart.cartList.length > 0) {
     const lastItem = cart.cartList.reduce((max, item) => {
@@ -58,7 +58,7 @@ const addToCart = asyncHandler(async (req, res) => {
 const removeFromCart = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { id } = req.body;
-  console.log(id)
+ 
 
   const cart = await Cart.findOne({ userId });
   console.log(cart);
@@ -79,7 +79,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
   const savedCart = await cart.save();
 
   res.status(200).json({
-     message: "Cart Cleard",
+     message: "Item Removed",
     cart: savedCart,
   });
 });
@@ -116,9 +116,74 @@ const getUserCart = asyncHandler(async (req, res) => {
   res.status(200).json(cart);
 });
 
+const incrementCartItemQuantity = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { cartItemId, amount = 1 } = req.body;
+
+  const cart = await Cart.findOne({ userId });
+  if (!cart) {
+    res.status(404);
+    throw new Error("Cart not found");
+  }
+
+  const item = cart.cartList.find(item => item.cartItemId === cartItemId);
+  if (!item) {
+    res.status(404);
+    throw new Error("Item not found in cart");
+  }
+
+ 
+
+ item.quantity += amount;
+cart.markModified("cartList");
+  
+
+  const savedCart = await cart.save();
+
+  res.status(200).json({
+    message: "Item quantity increased",
+    cart: savedCart,
+  });
+});
+
+
+const decrementCartItemQuantity = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { cartItemId, amount = 1 } = req.body;
+
+  const cart = await Cart.findOne({ userId });
+  if (!cart) {
+    res.status(404);
+    throw new Error("Cart not found");
+  }
+
+  const item = cart.cartList.find(item => item.cartItemId === cartItemId);
+  if (!item) {
+    res.status(404);
+    throw new Error("Item not found in cart");
+  }
+
+  item.quantity -= amount;
+  cart.markModified("cartList");
+  if (item.quantity <= 0) {
+    // Remove item completely
+    cart.cartList = cart.cartList.filter(i => i.cartItemId !== cartItemId);
+  }
+
+  const savedCart = await cart.save();
+
+  res.status(200).json({
+    message: "Item quantity updated",
+    cart: savedCart,
+  });
+});
+
+
 module.exports = {
     addToCart,
     removeFromCart,
     clearCart,
-    getUserCart
+    getUserCart,
+    decrementCartItemQuantity,
+    incrementCartItemQuantity
 }

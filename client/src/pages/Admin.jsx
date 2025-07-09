@@ -51,18 +51,18 @@ import {
 import { Link } from "react-router-dom";
 import PageHeader from "@/components/categories/PageHeader";
 import { useApp } from "@/context/AppContext";
+import { useProduct } from "@/context/ProductContext";
+import { toast } from "react-toastify";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
-   const [isAddOpen, setIsAddOpen] = useState(false);
- 
+  const [isAddOpen, setIsAddOpen] = useState(false);
+
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const { customers } = useApp();
+  const { createProduct, products, editProduct } = useProduct();
 
- 
-
-
-    const emptyProd = {
+  const emptyProd = {
     name: "",
     description: "",
     price: 0,
@@ -76,36 +76,105 @@ const Admin = () => {
     sizes: [{ size: "", amountOfSiize: 0 }],
   };
   const [newProd, setNewProd] = useState(emptyProd);
+    const [editProd, setEditProd] = useState(emptyProd);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewProd(p => ({
+    setNewProd((p) => ({
       ...p,
-      [name]: ['price','originalPrice','rating'].includes(name) ? Number(value) : value,
+      [name]: ["price", "originalPrice", "rating"].includes(name)
+        ? Number(value)
+        : value,
     }));
   };
 
   const handleArrChange = (field, idx, key, val) => {
-    setNewProd(p => {
+    setNewProd((p) => {
       const arr = [...p[field]];
-      arr[idx] = { ...arr[idx], [key]: key === 'amountOfSiize' ? Number(val) : val };
+      arr[idx] = {
+        ...arr[idx],
+        [key]: key === "amountOfSiize" ? Number(val) : val,
+      };
       return { ...p, [field]: arr };
     });
   };
 
   const addArrItem = (field, template) => {
-    setNewProd(p => ({ ...p, [field]: [...p[field], template] }));
+    setNewProd((p) => ({ ...p, [field]: [...p[field], template] }));
+  };
+
+  const removeArrItem = (field, index) => {
+    setNewProd((p) => ({
+      ...p,
+      [field]: p[field].filter((_, i) => i !== index),
+    }));
   };
 
   const handleSave = async () => {
+   try {
+     const res = await createProduct(newProd);
+  if (res?.message) {
+      toast.success(res.message);
+    } else {
+      toast.success("Product created successfully");
+    }
     setIsAddOpen(false);
     setNewProd(emptyProd);
+   } catch (error) {
+     console.error(error);
+    toast.error("Failed to create product");
+   }
   };
+
+  const handleEditClick = (product) => {
+  setEditProd(product);
+  console.log(product)
+  setIsEditProductOpen(true);
+};
+
+const handleEditChange = (e) => {
+  const { name, value } = e.target;
+  setEditProd((p) => ({ ...p, [name]: value }));
+};
+
+const editArrChange = (field, i, key, val) => {
+  const arr = [...editProd[field]];
+  arr[i][key] = val;
+  setEditProd((p) => ({ ...p, [field]: arr }));
+};
+
+const removeEditArrItem = (field, i) => {
+  const arr = [...editProd[field]];
+  arr.splice(i, 1);
+  setEditProd((p) => ({ ...p, [field]: arr }));
+};
+
+const addEditArrItem = (field, template) => {
+  setEditProd((p) => ({ ...p, [field]: [...p[field], template] }));
+};
+
+const handleUpdateSubmit = async () => {
+  try {
+    const res = await editProduct(editProd.id, editProd); 
+
+    if (res?.message) {
+      toast.success(res.message);
+    } else {
+      toast.success("Product updated successfully");
+    }
+    setIsEditProductOpen(false);
+    setEditProd(emptyProd);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to update product");
+  }
+};
+
 
   const stats = {
     totalRevenue: 45678000.9,
     totalOrders: 234,
-    totalProducts: 89,
+    totalProducts: products.length,
     totalCustomers: customers.length,
   };
 
@@ -145,49 +214,6 @@ const Admin = () => {
       status: "processing",
       date: "2024-01-12",
       items: 1,
-    },
-  ];
-
-  const products = [
-    {
-      id: 1,
-      name: "Silk Dreams Bra Set",
-      price: 89000.99,
-      stock: 25,
-      category: "Bras",
-      status: "active",
-      image: "/placeholder.svg?height=100&width=100",
-      sales: 45,
-    },
-    {
-      id: 2,
-      name: "Lace Whisper Collection",
-      price: 65000.99,
-      stock: 12,
-      category: "Sets",
-      status: "active",
-      image: "/placeholder.svg?height=100&width=100",
-      sales: 32,
-    },
-    {
-      id: 3,
-      name: "Velvet Rose Lingerie",
-      price: 95000.99,
-      stock: 8,
-      category: "Lingerie",
-      status: "low_stock",
-      image: "/placeholder.svg?height=100&width=100",
-      sales: 28,
-    },
-    {
-      id: 4,
-      name: "Midnight Elegance Set",
-      price: 78000.99,
-      stock: 0,
-      category: "Sets",
-      status: "out_of_stock",
-      image: "/placeholder.svg?height=100&width=100",
-      sales: 15,
     },
   ];
 
@@ -358,68 +384,301 @@ const Admin = () => {
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start flex-col lg:flex-row gap-2 lg:items-center justify-between">
               <h2 className="text-3xl font-bold text-gray-900">
                 Products Management
               </h2>
-              <Dialog
-                open={isAddOpen}
-                onOpenChange={setIsAddOpen}
-              >
-                <DialogTrigger asChild>
+              <div className="flex items-start flex-col lg:flex-row gap-2 lg:items-center justify-center">
+                <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Product
+                    </Button>
+                  </DialogTrigger>
+                  {/* Replace your static Add Product form with: */}
+                  <DialogContent className="max-w-4xl max-h-[90vh]  border-pink-300 ring-pink-200 overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Add New Product</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Left Column */}
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Name</Label>
+                          <Input
+                            name="name"
+                            value={newProd.name}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div>
+                          <Label>Description</Label>
+                          <Textarea
+                            name="description"
+                            value={newProd.description}
+                            onChange={handleChange}
+                            rows={4}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Price</Label>
+                            <Input
+                              name="price"
+                              type="number"
+                              value={newProd.price}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div>
+                            <Label>Original Price</Label>
+                            <Input
+                              name="originalPrice"
+                              type="number"
+                              value={newProd.originalPrice}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label>Cover Image URL</Label>
+                          <Input
+                            name="coverImage"
+                            value={newProd.coverImage}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div>
+                          <Label>Category</Label>
+                          <Select
+                            name="category"
+                            value={newProd.category}
+                            onValueChange={(val) =>
+                              setNewProd((prev) => ({
+                                ...prev,
+                                category: val,
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="set">Set</SelectItem>
+                              <SelectItem value="bras">Bras</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Rating</Label>
+                          <Input
+                            name="rating"
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            max="5"
+                            value={newProd.rating}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+                      {/* Right arrays */}
+                      <div className="space-y-4">
+                        {/* Images */}
+                        <div>
+                          <Label>Images</Label>
+                          {newProd.images.map((url, i) => (
+                            <div className="flex">
+                              <Input
+                                key={i}
+                                value={url}
+                                onChange={(e) => {
+                                  const arr = [...newProd.images];
+                                  arr[i] = e.target.value;
+                                  setNewProd((p) => ({ ...p, images: arr }));
+                                }}
+                              />
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => removeArrItem("images", i)}
+                              >
+                                X
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addArrItem("images", "")}
+                          >
+                            Add Image
+                          </Button>
+                        </div>
+                        {/* Features */}
+                        <div>
+                          <Label>Features</Label>
+                          {newProd.features.map((f, i) => (
+                            <div className="flex">
+                              <Input
+                                key={i}
+                                value={f}
+                                onChange={(e) => {
+                                  const arr = [...newProd.features];
+                                  arr[i] = e.target.value;
+                                  setNewProd((p) => ({ ...p, features: arr }));
+                                }}
+                              />
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => removeArrItem("features", i)}
+                              >
+                                X
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addArrItem("features", "")}
+                          >
+                            Add Feature
+                          </Button>
+                        </div>
+                        {/* Colors */}
+                        <div>
+                          <Label>Colors</Label>
+                          {newProd.colors.map((c, i) => (
+                            <div key={i} className="flex space-x-2">
+                              <Input
+                                placeholder="Name"
+                                value={c.colorName}
+                                onChange={(e) =>
+                                  handleArrChange(
+                                    "colors",
+                                    i,
+                                    "colorName",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                              <Input
+                                placeholder="#hex"
+                                value={c.colorValue}
+                                onChange={(e) =>
+                                  handleArrChange(
+                                    "colors",
+                                    i,
+                                    "colorValue",
+                                    e.target.value
+                                  )
+                                }
+                              />
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => removeArrItem("colors", i)}
+                              >
+                                X
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              addArrItem("colors", {
+                                colorName: "",
+                                colorValue: "",
+                              })
+                            }
+                          >
+                            Add Color
+                          </Button>
+                        </div>
+                        {/* Sizes */}
+                        <div>
+                          <Label>Sizes</Label>
+                          {newProd.sizes.map((s, i) => (
+                            <div key={i} className="flex space-x-2">
+                              <Input
+                                placeholder="Size"
+                                value={s.size}
+                                onChange={(e) =>
+                                  handleArrChange(
+                                    "sizes",
+                                    i,
+                                    "size",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                              <Input
+                                placeholder="Qty"
+                                type="number"
+                                value={s.amountOfSiize}
+                                onChange={(e) =>
+                                  handleArrChange(
+                                    "sizes",
+                                    i,
+                                    "amountOfSiize",
+                                    e.target.value
+                                  )
+                                }
+                              />
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => removeArrItem("sizes", i)}
+                              >
+                                X
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              addArrItem("sizes", {
+                                size: "",
+                                amountOfSiize: 0,
+                              })
+                            }
+                          >
+                            Add Size
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-end mt-4 space-x-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsAddOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="bg-gradient-to-r from-pink-500 to-red-800 text-white"
+                        onClick={handleSave}
+                      >
+                        Save Product
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <Link to="/bulk">
                   <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
                     <Plus className="w-4 h-4 mr-2" />
-                    Add Product
+                    Bulk
                   </Button>
-                </DialogTrigger>
-                {/* Replace your static Add Product form with: */}
-  <DialogContent className="max-w-4xl max-h-[90vh]  border-pink-300 ring-pink-200 overflow-y-auto">
-                  <DialogHeader><DialogTitle>Add New Product</DialogTitle></DialogHeader>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Left Column */}
-                    <div className="space-y-4">
-                      <div><Label>Name</Label><Input name="name" value={newProd.name} onChange={handleChange} /></div>
-                      <div><Label>Description</Label><Textarea name="description" value={newProd.description} onChange={handleChange} rows={4} /></div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div><Label>Price</Label><Input name="price" type="number" value={newProd.price} onChange={handleChange} /></div>
-                        <div><Label>Original Price</Label><Input name="originalPrice" type="number" value={newProd.originalPrice} onChange={handleChange} /></div>
-                      </div>
-                      <div><Label>Cover Image URL</Label><Input name="coverImage" value={newProd.coverImage} onChange={handleChange} /></div>
-                      <div><Label>Category</Label><Select name="category" value={newProd.category} onChange={handleChange}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="set">Set</SelectItem><SelectItem value="bras">Bras</SelectItem></SelectContent></Select></div>
-                      <div><Label>Rating</Label><Input name="rating" type="number" step="0.1" min="0" max="5" value={newProd.rating} onChange={handleChange} /></div>
-                    </div>
-                    {/* Right arrays */}
-                    <div className="space-y-4">
-                      {/* Images */}
-                      <div>
-                        <Label>Images</Label>
-                        {newProd.images.map((url,i)=>(<Input key={i} value={url} onChange={e=>{const arr=[...newProd.images];arr[i]=e.target.value;setNewProd(p=>({...p,images:arr}));}}/>))}
-                        <Button variant="outline" size="sm" onClick={()=>addArrItem('images','')}>Add Image</Button>
-                      </div>
-                      {/* Features */}
-                      <div>
-                        <Label>Features</Label>
-                        {newProd.features.map((f,i)=>(<Input key={i} value={f} onChange={e=>{const arr=[...newProd.features];arr[i]=e.target.value;setNewProd(p=>({...p,features:arr}));}}/>))}
-                        <Button variant="outline" size="sm" onClick={()=>addArrItem('features','')}>Add Feature</Button>
-                      </div>
-                      {/* Colors */}
-                      <div>
-                        <Label>Colors</Label>
-                        {newProd.colors.map((c,i)=>(<div key={i} className="flex space-x-2"><Input placeholder="Name" value={c.colorName} onChange={e=>handleArrChange('colors',i,'colorName',e.target.value)}/><Input placeholder="#hex" value={c.colorValue} onChange={e=>handleArrChange('colors',i,'colorValue',e.target.value)}/></div>))}
-                        <Button variant="outline" size="sm" onClick={()=>addArrItem('colors',{colorName:'',colorValue:''})}>Add Color</Button>
-                      </div>
-                      {/* Sizes */}
-                      <div>
-                        <Label>Sizes</Label>
-                        {newProd.sizes.map((s,i)=>(<div key={i} className="flex space-x-2"><Input placeholder="Size" value={s.size} onChange={e=>handleArrChange('sizes',i,'size',e.target.value)}/><Input placeholder="Qty" type="number" value={s.amountOfSiize} onChange={e=>handleArrChange('sizes',i,'amountOfSiize',e.target.value)}/></div>))}
-                        <Button variant="outline" size="sm" onClick={()=>addArrItem('sizes',{size:'',amountOfSiize:0})}>Add Size</Button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-end mt-4 space-x-2"><Button variant="outline" onClick={()=>setIsAddOpen(false)}>Cancel</Button><Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white" onClick={handleSave}>Save Product</Button></div>
-                </DialogContent>
-
-              </Dialog>
+                </Link>
+              </div>
             </div>
 
             {/* Search and Filter */}
@@ -464,7 +723,7 @@ const Admin = () => {
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             <img
-                              src={product.image || "/placeholder.svg"}
+                              src={product.coverImage || "/placeholder.svg"}
                               alt={product.name}
                               width={50}
                               height={50}
@@ -486,248 +745,259 @@ const Admin = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Button size="sm" variant="ghost">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Dialog
-                              open={isEditProductOpen}
-                              onOpenChange={setIsEditProductOpen}
-                            >
-                              <DialogTrigger asChild>
-                                <Button size="sm" variant="ghost">
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle>Edit Product</DialogTitle>
-                                </DialogHeader>
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                  {/* Edit Product Form - Pre-filled */}
-                                  <div className="space-y-4">
-                                    <div className="space-y-2">
-                                      <Label htmlFor="edit-name">
-                                        Product Name
-                                      </Label>
-                                      <Input
-                                        id="edit-name"
-                                        defaultValue="Silk Dreams Bra Set"
-                                      />
-                                    </div>
+                            <Link to={`/product/${product.id}`}>
+                              <Button size="sm" variant="ghost">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                           <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+  <DialogTrigger asChild>
+    <Button size="sm" variant="ghost" onClick={() => handleEditClick(product)}>
+      <Edit className="w-4 h-4"  />
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="max-w-4xl max-h-[90vh] border-pink-300 ring-pink-200 overflow-y-auto">
+    <DialogHeader>
+      <DialogTitle>Edit Product</DialogTitle>
+    </DialogHeader>
+    {console.log(editProd)}
 
-                                    <div className="space-y-2">
-                                      <Label htmlFor="edit-description">
-                                        Description
-                                      </Label>
-                                      <Textarea
-                                        id="edit-description"
-                                        defaultValue="Luxurious silk bra set with delicate lace details."
-                                        rows={4}
-                                      />
-                                    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* LEFT FORM */}
+      <div className="space-y-4">
+        <div>
+          <Label>Name</Label>
+          <Input name="name" value={editProd.name} onChange={handleEditChange} />
+        </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="edit-price">
-                                          Price
-                                        </Label>
-                                        <Input
-                                          id="edit-price"
-                                          type="number"
-                                          defaultValue="89.99"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="edit-compare-price">
-                                          Compare Price
-                                        </Label>
-                                        <Input
-                                          id="edit-compare-price"
-                                          type="number"
-                                          defaultValue="120.00"
-                                        />
-                                      </div>
-                                    </div>
+        <div>
+          <Label>Description</Label>
+          <Textarea
+            name="description"
+            value={editProd.description}
+            onChange={handleEditChange}
+            rows={4}
+          />
+        </div>
 
-                                    <div className="space-y-2">
-                                      <Label htmlFor="edit-category">
-                                        Category
-                                      </Label>
-                                      <Select defaultValue="bras">
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="bras">
-                                            Bras
-                                          </SelectItem>
-                                          <SelectItem value="panties">
-                                            Panties
-                                          </SelectItem>
-                                          <SelectItem value="sets">
-                                            Sets
-                                          </SelectItem>
-                                          <SelectItem value="sleepwear">
-                                            Sleepwear
-                                          </SelectItem>
-                                          <SelectItem value="lingerie">
-                                            Lingerie
-                                          </SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Price</Label>
+            <Input
+              name="price"
+              type="number"
+              value={editProd.price}
+              onChange={handleEditChange}
+            />
+          </div>
+          <div>
+            <Label>Original Price</Label>
+            <Input
+              name="originalPrice"
+              type="number"
+              value={editProd.originalPrice}
+              onChange={handleEditChange}
+            />
+          </div>
+        </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="edit-stock">
-                                          Stock Quantity
-                                        </Label>
-                                        <Input
-                                          id="edit-stock"
-                                          type="number"
-                                          defaultValue="25"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="edit-sku">SKU</Label>
-                                        <Input
-                                          id="edit-sku"
-                                          defaultValue="SLK-BRA-001"
-                                        />
-                                      </div>
-                                    </div>
+        <div>
+          <Label>Cover Image URL</Label>
+          <Input
+            name="coverImage"
+            value={editProd.coverImage}
+            onChange={handleEditChange}
+          />
+        </div>
 
-                                    <div className="space-y-2">
-                                      <Label htmlFor="edit-status">
-                                        Status
-                                      </Label>
-                                      <Select defaultValue="active">
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="active">
-                                            Active
-                                          </SelectItem>
-                                          <SelectItem value="inactive">
-                                            Inactive
-                                          </SelectItem>
-                                          <SelectItem value="low_stock">
-                                            Low Stock
-                                          </SelectItem>
-                                          <SelectItem value="out_of_stock">
-                                            Out of Stock
-                                          </SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                  </div>
+        <div>
+          <Label>Category</Label>
+          <Select
+            name="category"
+            value={editProd.category}
+            onValueChange={(val) =>
+              setEditProd((prev) => ({ ...prev, category: val }))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="set">Set</SelectItem>
+              <SelectItem value="bras">Bras</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-                                  {/* Current Images and Variants */}
-                                  <div className="space-y-4">
-                                    <div className="space-y-2">
-                                      <Label>Product Images</Label>
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <div className="relative">
-                                          <img
-                                            src="/placeholder.svg?height=150&width=150"
-                                            alt="Product image"
-                                            width={150}
-                                            height={150}
-                                            className="rounded-lg object-cover w-full"
-                                          />
-                                          <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            className="absolute top-2 right-2 h-6 w-6 p-0"
-                                          >
-                                            <X className="w-4 h-4" />
-                                          </Button>
-                                        </div>
-                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center">
-                                          <Plus className="w-8 h-8 text-gray-400" />
-                                        </div>
-                                      </div>
-                                    </div>
+        <div>
+          <Label>Rating</Label>
+          <Input
+            name="rating"
+            type="number"
+            value={editProd.rating}
+            onChange={handleEditChange}
+          />
+        </div>
+      </div>
 
-                                    <div className="space-y-2">
-                                      <Label>Available Colors</Label>
-                                      <div className="grid grid-cols-2 gap-2">
-                                        {[
-                                          "Rose Pink",
-                                          "Wine Red",
-                                          "Blush",
-                                          "Deep Rose",
-                                          "Black",
-                                          "White",
-                                        ].map((color) => (
-                                          <div
-                                            key={color}
-                                            className="flex items-center space-x-2"
-                                          >
-                                            <Checkbox
-                                              id={`edit-color-${color}`}
-                                              defaultChecked={[
-                                                "Rose Pink",
-                                                "Wine Red",
-                                                "Blush",
-                                              ].includes(color)}
-                                            />
-                                            <Label
-                                              htmlFor={`edit-color-${color}`}
-                                              className="text-sm"
-                                            >
-                                              {color}
-                                            </Label>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
+      {/* RIGHT - Arrays */}
+      <div className="space-y-4">
+        {/* IMAGES */}
+        <div>
+          <Label>Images</Label>
+          {editProd.images.map((url, i) => (
+            <div key={i} className="flex">
+              <Input
+                value={url}
+                onChange={(e) => {
+                  const arr = [...editProd.images];
+                  arr[i] = e.target.value;
+                  setEditProd((p) => ({ ...p, images: arr }));
+                }}
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => removeEditArrItem("images", i)}
+              >
+                X
+              </Button>
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => addEditArrItem("images", "")}
+          >
+            Add Image
+          </Button>
+        </div>
 
-                                    <div className="space-y-2">
-                                      <Label>Available Sizes</Label>
-                                      <div className="grid grid-cols-3 gap-2">
-                                        {["XS", "S", "M", "L", "XL", "XXL"].map(
-                                          (size) => (
-                                            <div
-                                              key={size}
-                                              className="flex items-center space-x-2"
-                                            >
-                                              <Checkbox
-                                                id={`edit-size-${size}`}
-                                                defaultChecked={[
-                                                  "S",
-                                                  "M",
-                                                  "L",
-                                                  "XL",
-                                                ].includes(size)}
-                                              />
-                                              <Label
-                                                htmlFor={`edit-size-${size}`}
-                                                className="text-sm"
-                                              >
-                                                {size}
-                                              </Label>
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex justify-end space-x-2 pt-4">
-                                  <Button
-                                    variant="outline"
-                                    onClick={() => setIsEditProductOpen(false)}
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button className="bg-gradient-to-r from-pink-500 to-red-800 text-white">
-                                    Update Product
-                                  </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+        {/* FEATURES */}
+        <div>
+          <Label>Features</Label>
+          {editProd.features.map((f, i) => (
+            <div key={i} className="flex">
+              <Input
+                value={f}
+                onChange={(e) => {
+                  const arr = [...editProd.features];
+                  arr[i] = e.target.value;
+                  setEditProd((p) => ({ ...p, features: arr }));
+                }}
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => removeEditArrItem("features", i)}
+              >
+                X
+              </Button>
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => addEditArrItem("features", "")}
+          >
+            Add Feature
+          </Button>
+        </div>
+
+        {/* COLORS */}
+        <div>
+          <Label>Colors</Label>
+          {editProd.colors.map((c, i) => (
+            <div key={i} className="flex space-x-2">
+              <Input
+                placeholder="Name"
+                value={c.colorName}
+                onChange={(e) =>
+                  editArrChange("colors", i, "colorName", e.target.value)
+                }
+              />
+              <Input
+                placeholder="#hex"
+                value={c.colorValue}
+                onChange={(e) =>
+                  editArrChange("colors", i, "colorValue", e.target.value)
+                }
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => removeEditArrItem("colors", i)}
+              >
+                X
+              </Button>
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              addEditArrItem("colors", { colorName: "", colorValue: "" })
+            }
+          >
+            Add Color
+          </Button>
+        </div>
+
+        {/* SIZES */}
+        <div>
+          <Label>Sizes</Label>
+          {editProd.sizes.map((s, i) => (
+            <div key={i} className="flex space-x-2">
+              <Input
+                placeholder="Size"
+                value={s.size}
+                onChange={(e) =>
+                  editArrChange("sizes", i, "size", e.target.value)
+                }
+              />
+              <Input
+                placeholder="Qty"
+                type="number"
+                value={s.amountOfSiize}
+                onChange={(e) =>
+                  editArrChange("sizes", i, "amountOfSiize", e.target.value)
+                }
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => removeEditArrItem("sizes", i)}
+              >
+                X
+              </Button>
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              addEditArrItem("sizes", { size: "", amountOfSiize: 0 })
+            }
+          >
+            Add Size
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div className="flex justify-end mt-4 space-x-2">
+      <Button variant="outline" onClick={() => setIsEditProductOpen(false)}>
+        Cancel
+      </Button>
+      <Button
+        className="bg-gradient-to-r from-pink-500 to-red-800 text-white"
+        onClick={handleUpdateSubmit} // Your update function here
+      >
+        Update Product
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
                             <Button size="sm" variant="ghost">
                               <Trash2 className="w-4 h-4" />
                             </Button>

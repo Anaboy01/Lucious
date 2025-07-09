@@ -1,11 +1,12 @@
 import { registerAdmin, checkLoginStatus,loginUser,logoutUser,registerUser,getUserProfile, getCustomers } from "@/services/authService";
+import { addWish, getWish, removeWish, clearWish } from "@/services/wishService";
 
 
 
 export default function TestPage() {
   const handleClick = async () => {
-   const res  =await getCustomers()
-    alert("user fetched");
+   const res  =await addWish(1002)
+    alert("wish fetched");
     console.log(res);
   };
 
@@ -14,10 +15,12 @@ export default function TestPage() {
     alert("logged out");
   }
 
+
+
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <button
-        onClick={handleLogout}
+        onClick={handleClick}
         className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
       >
         Click Me

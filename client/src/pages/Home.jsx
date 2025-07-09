@@ -29,7 +29,7 @@ const Home = () => {
       <Footer />
 
       {/* Custom CSS for animations */}
-      <style jsx>{`
+      <style >{`
         @keyframes fadeIn {
           from {
             opacity: 0;

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -7,9 +7,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useProduct } from "@/context/ProductContext"
+import { toast } from "react-toastify"
 
-const Reviews = ({ reviews }) => {
+const Reviews = ({ reviews, product, fetchProduct }) => {
   const [userReview, setUserReview] = useState("")
+
+  const {addReview} = useProduct()
 
 
   const [allReviews, setAllReviews] = useState(reviews)
@@ -23,20 +27,33 @@ const Reviews = ({ reviews }) => {
     currentPage * reviewsPerPage
   )
 
-  const handleReviewSubmit = () => {
-    const newReview = {
-      userId: allReviews.length + 1,
-      review: userReview,
-    }
-
-    setAllReviews((prev) => [newReview, ...prev])
-    setUserReview("")
-    setCurrentPage(1) // move to first page when a new review is added
+  const handleReviewSubmit =  async () => {
+   
+   try {
+       const res = await addReview(product.id, userReview)
+      
+     if (res?.message) {
+         toast.success(res.message);
+       } else {
+         toast.success("Thanks for your review");
+       }
+       await fetchProduct()
+        setUserReview("")
+    setCurrentPage(1) 
+      } catch (error) {
+        console.error(error);
+       toast.error("Failed to review");
+      }
+  
   }
+
+  useEffect(() => {
+  setAllReviews(reviews);
+}, [reviews]);
 
   return (
     <div className="mt-16 border-t pt-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between flex-col lg:flex-row items-start lg:items-center mb-6">
        <div className="flex items-center gap-2">
          <h2 className="text-2xl font-bold">Customer Reviews</h2>
          <span>({reviews.length})</span>
@@ -59,6 +76,7 @@ const Reviews = ({ reviews }) => {
                 onChange={(e) => setUserReview(e.target.value)}
               />
               <Button
+                disabled={!userReview.trim()}
                 onClick={handleReviewSubmit}
                 className="w-full bg-gradient-to-r from-pink-500 to-red-800 text-white"
               >

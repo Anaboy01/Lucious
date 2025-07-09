@@ -9,9 +9,9 @@ import { X } from "lucide-react"
 
 const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
   const categories = ["All", "Bras", "Panties", "Sets", "Sleepwear", "Lingerie", "Accessories","Gym wears"]
-  const colors = ["Rose Pink", "Wine Red", "Blush", "Deep Rose", "Black", "White", "Nude", "Navy"]
+
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"]
-  const brands = ["Luscious", "Silk Dreams", "Rose Collection", "Velvet Touch", "Midnight"]
+ 
 
   const handleCategoryChange = (category) => {
     onFiltersChange({
@@ -20,23 +20,18 @@ const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
     })
   }
 
-  const handleColorChange = (color, checked) => {
-    const newColors = checked ? [...filters.colors, color] : filters.colors.filter((c) => c !== color)
 
-    onFiltersChange({
-      ...filters,
-      colors: newColors,
-    })
-  }
 
   const handleSizeChange = (size, checked) => {
-    const newSizes = checked ? [...filters.sizes, size] : filters.sizes.filter((s) => s !== size)
+  const newSizes = checked
+    ? [...filters.sizes, size]
+    : filters.sizes.filter((s) => s !== size)
 
-    onFiltersChange({
-      ...filters,
-      sizes: newSizes,
-    })
-  }
+  onFiltersChange({
+    ...filters,
+    sizes: newSizes,
+  })
+}
 
   const handleBrandChange = (brand, checked) => {
     const newBrands = checked ? [...filters.brands, brand] : filters.brands.filter((b) => b !== brand)
@@ -57,7 +52,6 @@ const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
   const getActiveFiltersCount = () => {
     let count = 0
     if (filters.category) count++
-    count += filters.colors.length
     count += filters.sizes.length
     count += filters.brands.length
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 250000) count++
@@ -108,7 +102,7 @@ const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
               <Slider
                 value={filters.priceRange}
                 onValueChange={handlePriceChange}
-                max={250000}
+                max={1000000}
                 min={0}
                 step={5}
                 className="mb-3"
@@ -139,43 +133,7 @@ const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
             </div>
           </div>
 
-          {/* Color Filter */}
-          <div className="mb-6">
-            <h4 className="font-medium mb-3 text-gray-700">Color</h4>
-            <div className="space-y-2">
-              {colors.map((color) => (
-                <div key={color} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`color-${color}`}
-                    checked={filters.colors.includes(color)}
-                    onCheckedChange={(checked) => handleColorChange(color, checked)}
-                  />
-                  <div
-                    className={`w-4 h-4 rounded-full border border-gray-300 ${
-                      color === "Rose Pink"
-                        ? "bg-pink-300"
-                        : color === "Wine Red"
-                          ? "bg-red-800"
-                          : color === "Blush"
-                            ? "bg-pink-200"
-                            : color === "Deep Rose"
-                              ? "bg-red-600"
-                              : color === "Black"
-                                ? "bg-black"
-                                : color === "White"
-                                  ? "bg-white"
-                                  : color === "Nude"
-                                    ? "bg-amber-100"
-                                    : "bg-blue-900"
-                    }`}
-                  />
-                  <Label htmlFor={`color-${color}`} className="text-sm text-gray-600 cursor-pointer">
-                    {color}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
+         
 
         
 
@@ -202,19 +160,7 @@ const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
                   </Button>
                 </Badge>
               )}
-              {filters.colors.map((color) => (
-                <Badge key={color} variant="secondary" className="bg-pink-100 text-pink-700 hover:bg-pink-200">
-                  {color}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="ml-1 h-4 w-4 p-0 hover:bg-pink-300"
-                    onClick={() => handleColorChange(color, false)}
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
-                </Badge>
-              ))}
+              
               {filters.sizes.map((size) => (
                 <Badge key={size} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200">
                   Size {size}

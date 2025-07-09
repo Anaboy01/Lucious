@@ -2,11 +2,14 @@ import CartItem from "@/components/cart/CartItem";
 import PageHeader from "@/components/categories/PageHeader";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ui/ProductCard";
+import { useWish } from "@/context/WishContext";
 import { ShoppingBag, Truck, Shield, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+
 const WishList = () => {
-  const wishItems = [
+  const [wishItems, setWishItems]= useState([
     {
       id: 1,
       name: "Silk Dreams Bra Set",
@@ -85,7 +88,12 @@ const WishList = () => {
       sizes: ["M", "L", "XL"],
       dateAdded: "2024-05-05",
     },
-  ];
+  ])
+ const {wishList} = useWish()
+
+  useEffect(() => {
+  setWishItems(wishList)
+  },[wishList])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">

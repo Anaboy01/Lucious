@@ -6,6 +6,7 @@ import {
   updateProduct,
   allProducts,
   getAProduct,
+  getCategories
 } from "@/services/productService"; // adjust the import path
 
 const ProductContext = createContext();
@@ -13,27 +14,39 @@ const ProductContext = createContext();
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [singleProduct, setSingleProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [productLoading, setProductLoading] = useState(false);
+  
 
   const fetchAllProducts = async () => {
-    setLoading(true);
+    setProductLoading(true);
     try {
       const data = await allProducts();
       setProducts(data);
+      
       return data;
     } finally {
-      setLoading(false);
+      setProductLoading(false);
+    }
+  };
+  const fetchProductCategory = async (category) => {
+    setProductLoading(true);
+    try {
+      const data = await getCategories(category);
+      
+      return data;
+    } finally {
+      setProductLoading(false);
     }
   };
 
   const fetchProductById = async (id) => {
-    setLoading(true);
+    setProductLoading(true);
     try {
       const data = await getAProduct(id);
       setSingleProduct(data);
       return data;
     } finally {
-      setLoading(false);
+      setProductLoading(false);
     }
   };
 
@@ -57,7 +70,7 @@ export const ProductProvider = ({ children }) => {
 
   const addReview = async (id, reviewData) => {
     const res = await reviewProduct(id, reviewData);
-    await fetchProductById(id); // refresh the single product
+    await fetchProductById(id); 
     return res;
   };
 
@@ -70,13 +83,14 @@ export const ProductProvider = ({ children }) => {
       value={{
         products,
         singleProduct,
-        loading,
+        productLoading,
         fetchAllProducts,
         fetchProductById,
         createProduct,
         bulkCreateProducts,
         editProduct,
         addReview,
+        fetchProductCategory
       }}
     >
       {children}
