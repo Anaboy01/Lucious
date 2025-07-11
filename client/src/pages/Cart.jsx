@@ -7,10 +7,22 @@ import { ShoppingBag, Truck, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
+import { useApp } from "@/context/AppContext";
+import { useOrder } from "@/context/OrderContext";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearUserCart } = useCart();
+  const {user} = useApp()
+  const {handlePlaceOrder} = useOrder()
+  const [addressData, setAddressData] = useState({
+  state: "",
+  lga: "",
+  address: ""
+});
+
+
 
   useEffect(() => {
     setCartItems(cart);
@@ -20,7 +32,7 @@ const Cart = () => {
     
      try {
      const  res = await  increaseQuantity(id);
-     console.log("", res);
+     
     if (res) {
       toast.success(res.message)
     }
@@ -47,7 +59,7 @@ const Cart = () => {
   const removeItem = async(id) => {
      try {
      const  res = await removeFromCart(id);
-     console.log(res)
+   
     if (res) {
       toast.info(res.message)
     }
@@ -60,7 +72,7 @@ const Cart = () => {
   const clear = async () => {
       try {
      const  res = await clearUserCart();
-     console.log(res)
+    
     if (res) {
       toast.info(res.message)
     }
@@ -73,6 +85,62 @@ const Cart = () => {
   const savings = cartItems.reduce((sum, item) => sum + (item.originalPrice - item.price) * item.quantity, 0);
   const shipping = subtotal > 200000 ? 0 : 10000;
   const total = subtotal + shipping;
+
+  const FW_PUBLIC = import.meta.env.VITE_FW_PUBLIC_KEY
+
+   const config = {
+    public_key: FW_PUBLIC,
+    tx_ref: Date.now(),
+    amount: total,
+    currency: 'NGN',
+    payment_options: 'card,mobilemoney,ussd',
+    customer: {
+      email: user?.email,
+       phone_number: '070********',
+      name: user?.name,
+    },
+    customizations: {
+      title: 'Lucious Lingierie',
+      description: 'Payment for items in cart',
+      logo: 'https://res.cloudinary.com/dispu86tu/image/upload/v1752149679/luscious_lingerie_logo_092115_bx86if.png',
+    },
+  };
+
+  const handleFlutterPayment = useFlutterwave(config);
+
+  const handleCheckout = () => {
+  if (!addressData.state || !addressData.lga || !addressData.address) {
+    toast.error("Please complete your delivery address.");
+    return;
+  }
+
+  handleFlutterPayment({
+    callback: async (response) => {
+      try {
+      
+
+        if (response.status === "successful") {
+          await handlePlaceOrder(
+            { type: "flutterwave", txn: response },
+            addressData
+          );
+          toast.success("Order placed successfully!");
+        } else {
+          toast.error("Payment failed or was cancelled.");
+        }
+      } catch (error) {
+        console.error("Order placement error:", error);
+        toast.error("Failed to place order.");
+      } finally {
+        closePaymentModal(); // Always close the modal
+      }
+    },
+    onClose: () => {
+      console.log("Payment modal closed");
+    },
+  });
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
@@ -123,8 +191,52 @@ const Cart = () => {
               ))}
             </div>
 
+
+
+           
+
             {/* Order Summary */}
             <div className="space-y-6">
+                            <Card className="bg-white/70 backdrop-blur-sm border-pink-100 mb-6">
+  <CardContent className="p-6">
+    <h3 className="font-semibold text-gray-800 mb-4">Delivery Address</h3>
+
+    <div className="space-y-4">
+      <div>
+        <label className="block text-gray-600 mb-1">State</label>
+        <input
+          type="text"
+          value={addressData.state}
+          onChange={(e) => setAddressData({ ...addressData, state: e.target.value })}
+          className="w-full p-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+          placeholder="Enter your state"
+        />
+      </div>
+
+      <div>
+        <label className="block text-gray-600 mb-1">LGA</label>
+        <input
+          type="text"
+          value={addressData.lga}
+          onChange={(e) => setAddressData({ ...addressData, lga: e.target.value })}
+          className="w-full p-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+          placeholder="Enter your local government area"
+        />
+      </div>
+
+      <div>
+        <label className="block text-gray-600 mb-1">Address</label>
+        <textarea
+          value={addressData.address}
+          onChange={(e) => setAddressData({ ...addressData, address: e.target.value })}
+          className="w-full p-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+          rows={3}
+          placeholder="Street address, building, etc."
+        />
+      </div>
+    </div>
+  </CardContent>
+</Card>
               <Card className="bg-white/70 backdrop-blur-sm border-pink-100">
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-gray-800 mb-4">Order Summary</h3>
@@ -158,7 +270,9 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  <Button size="lg" className="w-full mt-6 bg-gradient-to-r from-pink-500 to-red-800 text-white">
+                  <Button
+                    onClick={handleCheckout}
+                  size="lg" className="w-full mt-6 bg-gradient-to-r from-pink-500 to-red-800 text-white">
                     Proceed to Checkout
                   </Button>
 

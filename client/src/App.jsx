@@ -11,6 +11,8 @@ import TestPage from './pages/DomPage'
 import AuthPage from './pages/AuthPage'
 import "react-toastify/dist/ReactToastify.css"
 import BulkReg from './pages/BulkReg'
+import UserOrders from './pages/Order'
+import ViewOrderPage from './pages/ViewOrderPage'
 
 
 const App = () => {
@@ -27,6 +29,8 @@ const App = () => {
     <Route path="/login" element={<AuthPage mode="login" />} />
     <Route path="/register" element={<AuthPage mode="register" />} />
     <Route path="/bulk" element={<BulkReg/>} />
+    <Route path="/orders" element={<UserOrders/>} />
+    <Route path="/orderReciept/:orderId" element={<ViewOrderPage/>} />
 
       
     

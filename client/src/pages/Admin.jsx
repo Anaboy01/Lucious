@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,14 +53,33 @@ import PageHeader from "@/components/categories/PageHeader";
 import { useApp } from "@/context/AppContext";
 import { useProduct } from "@/context/ProductContext";
 import { toast } from "react-toastify";
+import { useOrder } from "@/context/OrderContext";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
-  const { customers } = useApp();
+ 
+  const { customers, loggedIn } = useApp();
+  const {fetchAllOrders, orders, handleUpdateStatus} = useOrder()
+    const [updating, setUpdating] = useState(false);
   const { createProduct, products, editProduct } = useProduct();
+
+  useEffect(() => {
+
+
+    if(loggedIn) {
+      fetchAllOrders();
+    }
+  },[loggedIn])
+
+
+  const totalRevenue = orders.reduce((acc, order) => acc + order.amount_paid, 0);
+
+
+
+
 
   const emptyProd = {
     name: "",
@@ -128,7 +147,6 @@ const Admin = () => {
 
   const handleEditClick = (product) => {
   setEditProd(product);
-  console.log(product)
   setIsEditProductOpen(true);
 };
 
@@ -172,50 +190,17 @@ const handleUpdateSubmit = async () => {
 
 
   const stats = {
-    totalRevenue: 45678000.9,
-    totalOrders: 234,
+    totalRevenue,
+    totalOrders:orders?.length,
     totalProducts: products.length,
     totalCustomers: customers.length,
   };
 
-  const recentOrders = [
-    {
-      id: "ORD-001",
-      customer: "Sarah Johnson",
-      email: "sarah@email.com",
-      total: 129000.99,
-      status: "pending",
-      date: "2024-01-15",
-      items: 2,
-    },
-    {
-      id: "ORD-002",
-      customer: "Emma Wilson",
-      email: "emma@email.com",
-      total: 89000.99,
-      status: "shipped",
-      date: "2024-01-14",
-      items: 1,
-    },
-    {
-      id: "ORD-003",
-      customer: "Lisa Brown",
-      email: "lisa@email.com",
-      total: 199000.99,
-      status: "delivered",
-      date: "2024-01-13",
-      items: 3,
-    },
-    {
-      id: "ORD-004",
-      customer: "Anna Davis",
-      email: "anna@email.com",
-      total: 75000.99,
-      status: "processing",
-      date: "2024-01-12",
-      items: 1,
-    },
-  ];
+
+
+  const recentOrders = orders
+  .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate))
+
 
   const getStatusVariant = (status) => {
     switch (status) {
@@ -248,6 +233,8 @@ const handleUpdateSubmit = async () => {
         return "secondary";
     }
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
@@ -362,18 +349,25 @@ const handleUpdateSubmit = async () => {
                   </TableHeader>
                   <TableBody>
                     {recentOrders.slice(0, 5).map((order) => (
-                      <TableRow key={order.id}>
+                      <TableRow key={order._id}>
                         <TableCell className="font-medium">
-                          {order.id}
+                          {`${order._id.slice(0, 8)}...`}
                         </TableCell>
-                        <TableCell>{order.customer}</TableCell>
-                        <TableCell>₦{order.total}</TableCell>
+                        <TableCell>{order.user.name}</TableCell>
+                        <TableCell>₦{order.amount_paid}</TableCell>
                         <TableCell>
                           <Badge variant={getStatusVariant(order.status)}>
                             {order.status}
                           </Badge>
                         </TableCell>
-                        <TableCell>{order.date}</TableCell>
+                        <TableCell>{new Date(order.orderDate).toLocaleString("en-NG", {
+  weekday: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+})}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -760,7 +754,7 @@ const handleUpdateSubmit = async () => {
     <DialogHeader>
       <DialogTitle>Edit Product</DialogTitle>
     </DialogHeader>
-    {console.log(editProd)}
+   
 
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* LEFT FORM */}
@@ -1055,7 +1049,7 @@ const handleUpdateSubmit = async () => {
                     <TableRow>
                       <TableHead>Order ID</TableHead>
                       <TableHead>Customer</TableHead>
-                      <TableHead>Email</TableHead>
+                      <TableHead>Phone No</TableHead>
                       <TableHead>Items</TableHead>
                       <TableHead>Total</TableHead>
                       <TableHead>Status</TableHead>
@@ -1065,18 +1059,34 @@ const handleUpdateSubmit = async () => {
                   </TableHeader>
                   <TableBody>
                     {recentOrders.map((order) => (
-                      <TableRow key={order.id}>
+                      <TableRow key={order._id}>
                         <TableCell className="font-medium">
-                          {order.id}
+                             {`${order._id.slice(0, 8)}...`}
                         </TableCell>
-                        <TableCell>{order.customer}</TableCell>
-                        <TableCell>{order.email}</TableCell>
-                        <TableCell>{order.items}</TableCell>
+                        <TableCell>{order.user.name}</TableCell>
+                        <TableCell>{order.user.phoneNo}</TableCell>
+                        <TableCell>{order.cartList.length}</TableCell>
                         <TableCell className="font-medium">
-                          ₦{order.total}
+                          ₦{order.amount_paid}
                         </TableCell>
                         <TableCell>
-                          <Select defaultValue={order.status}>
+                          <Select disabled={updating}
+  defaultValue={order.status}
+  onValueChange={async (newStatus) => {
+    try {
+      setUpdating(true);
+      const result = await handleUpdateStatus(order._id, newStatus);
+     
+      
+      return result;
+    } catch (error) {
+      
+      console.error(error);
+    } finally {
+      setUpdating(false);
+    }
+  }}
+>
                             <SelectTrigger className="w-[120px]">
                               <SelectValue />
                             </SelectTrigger>
@@ -1095,15 +1105,21 @@ const handleUpdateSubmit = async () => {
                             </SelectContent>
                           </Select>
                         </TableCell>
-                        <TableCell>{order.date}</TableCell>
+                        <TableCell>{new Date(order.orderDate).toLocaleString("en-NG", {
+  weekday: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+})}</TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Button size="sm" variant="ghost">
+                          <Link to={`/orderReciept/${order._id}`}>
+                              <Button size="sm" variant="ghost">
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="ghost">
-                              <Edit className="w-4 h-4" />
-                            </Button>
+                          </Link>
                           </div>
                         </TableCell>
                       </TableRow>

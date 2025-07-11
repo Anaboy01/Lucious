@@ -21,6 +21,12 @@ const orderSchema = new mongoose.Schema({
     orderDate:{
         type: Date,
     },
+    transaction:{
+        type: Object
+    },
+    address: {
+        type: Object,
+    }
 
 })
 

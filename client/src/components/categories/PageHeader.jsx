@@ -38,11 +38,12 @@ const PageHeader = () => {
 
   const handleLogout = async () => {
     await logout();
+  
     setIsProfileMenu(false);
   };
 
   const profileIcons = [
-    ...(isAdmin ? [{ name: "Dashboard", href: "/admin" }] : []),
+    ...(isAdmin ? [{ name: "Dashboard", href: "/admin" }] : [{ name: "My Orders", href:"/orders"}]),
     { name: "Logout", action: handleLogout },
   ];
 
@@ -142,7 +143,7 @@ const PageHeader = () => {
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent className="w-44 rounded-xl border border-pink-100 bg-white/80 backdrop-blur-lg shadow-lg mt-2">
-      <DropdownMenuLabel className="text-pink-600 font-semibold">My Account</DropdownMenuLabel>
+      <DropdownMenuLabel className="text-pink-600 font-semibold">{user?.name || "My Account"}</DropdownMenuLabel>
       <DropdownMenuSeparator className="bg-pink-100" />
       {isAdmin && (
         <Link to="/admin">
@@ -157,6 +158,13 @@ const PageHeader = () => {
       >
         Logout
       </DropdownMenuItem>
+    {!isAdmin && (
+        <Link to="/orders">
+        <DropdownMenuItem className="group text-gray-700 hover:text-pink-600 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 transition-all duration-300 rounded-lg">
+          My Orders
+        </DropdownMenuItem>
+      </Link>
+    )}
     </DropdownMenuContent>
   </DropdownMenu>
 ) : (

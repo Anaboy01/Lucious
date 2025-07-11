@@ -6,12 +6,15 @@ import {
   getWish,
 } from "@/services/wishService" 
 import { toast } from "react-toastify"
+import { useApp } from "./AppContext"
+
 
 const WishContext = createContext()
 
 export const WishProvider = ({ children }) => {
   const [wishList, setWishList] = useState([])
   const [loading, setLoading] = useState(false)
+  const {loggedIn} = useApp()
 
   // Fetch wishlist on mount
 
@@ -19,7 +22,12 @@ export const WishProvider = ({ children }) => {
     try {
       setLoading(true)
       const data = await getWish()
+      if (!data) {
+        return
+      }
+
       setWishList(data.wishList)
+      
     } catch (error) {
         toast.error("Error fetching wishlist")
       console.error("Error fetching wishlist:", error)
@@ -27,9 +35,13 @@ export const WishProvider = ({ children }) => {
       setLoading(false)
     }
   }
-    useEffect(() => {
+useEffect(() => {
+  if (loggedIn) {
     fetchWishlist()
-  }, [])
+  } else {
+    setWishList([]) 
+  }
+}, [loggedIn])
 
   const handleAddWish = async (id) => {
     try {
@@ -70,6 +82,7 @@ export const WishProvider = ({ children }) => {
         handleAddWish,
         handleRemoveWish,
         handleClearWish,
+        setWishList
       }}
     >
       {children}

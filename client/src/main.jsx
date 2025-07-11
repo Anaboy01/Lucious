@@ -8,7 +8,7 @@ import { AppProvider } from "./context/AppContext";
 import { ProductProvider } from "./context/ProductContext";
 import { WishProvider } from "./context/WishContext";
 import { CartProvider } from "./context/CartContext";
-
+import { OrderProvider } from "./context/OrderContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -16,10 +16,12 @@ createRoot(document.getElementById("root")).render(
       <ProductProvider>
         <WishProvider>
           <CartProvider>
-          <BrowserRouter>
-            <App />
-            <ToastContainer />
-          </BrowserRouter>
+            <OrderProvider>
+              <BrowserRouter>
+                <App />
+                <ToastContainer />
+              </BrowserRouter>
+            </OrderProvider>
           </CartProvider>
         </WishProvider>
       </ProductProvider>

@@ -7,6 +7,7 @@ import {
   getCustomers,
   getUserProfile
 } from "../services/authService";
+import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
@@ -82,7 +83,7 @@ export const AppProvider = ({ children }) => {
     try {
       setLoading(true);
     await logoutUser();
-      setMessage("Logout successful");
+      toast.success("Logout successful");
       await checkAuth();
     } catch (err) {
       setMessage("Logout failed");

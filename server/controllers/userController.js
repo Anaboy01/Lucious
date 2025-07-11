@@ -6,7 +6,7 @@ const User = require("../models/userModel");
 
 
 const registerUser = asyncHandler(async (req, res) => {
-     const { name, email, password } = req.body;
+     const { name, email, password, phoneNo } = req.body;
 
      // validate input
      if (!name || !email || !password) {
@@ -35,6 +35,7 @@ const registerUser = asyncHandler(async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        phoneNo
      });
 
      const token = generateToken(user._id);
@@ -56,6 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
                _id,
             name,
             email,
+            phoneNo
             }
           });
      } else {

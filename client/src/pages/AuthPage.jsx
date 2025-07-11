@@ -9,11 +9,15 @@ import { useApp } from "@/context/AppContext"
 import { toast } from "react-toastify"
 
 
+
 const AuthPage = ({ mode = "login" }) => {
   const isLogin = mode === "login"
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" })
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", phoneNo: "" })
   const navigate = useNavigate()
   const { login, register, message, loading } = useApp()
+
+
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -25,9 +29,11 @@ const AuthPage = ({ mode = "login" }) => {
       if (isLogin) {
         await login({ email: formData.email, password: formData.password })
         toast.success("Login successful")
+        navigate("/")
       } else {
         await register(formData)
         toast.success("Registration successful")
+         navigate("/")
       }
     //   navigate("/")
     } catch (err) {
@@ -47,7 +53,9 @@ const AuthPage = ({ mode = "login" }) => {
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             {!isLogin && (
-              <div className="space-y-2">
+
+           <>
+               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
@@ -57,6 +65,18 @@ const AuthPage = ({ mode = "login" }) => {
                   onChange={handleChange}
                 />
               </div>
+
+               <div className="space-y-2">
+                <Label htmlFor="phoneNo">Phone Number</Label>
+                <Input
+                  id="phoneNo"
+                  name="phoneNo"
+                  placeholder="Enter your phone number"
+                  value={formData.phoneNo}
+                  onChange={handleChange}
+                />
+              </div>
+           </>
             )}
 
             <div className="space-y-2">

@@ -2,9 +2,12 @@ const asyncHandler = require("express-async-handler");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
 const Product = require("../models/productModel");
+const { sendEmail } = require("../utils");
 
 const placeOrder = asyncHandler(async (req, res) => {
   const user = req.user;
+  const {transaction, address} = req.body
+
 
   const cart = await Cart.findOne({ userId: user._id });
   if (!cart || cart.cartList.length === 0) {
@@ -53,16 +56,51 @@ const placeOrder = asyncHandler(async (req, res) => {
   }
 
   const amount_paid = cartList.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const emailAddresses = [
+    "aliyuanate016@gmail.com",
+    "anateboy01@gmail.com",
+  ]
+
+  await sendEmail({
+     from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: "ORDER PLACED",
+    html:`
+     <h1>Order notification</h1>
+        <img src="https://res.cloudinary.com/dispu86tu/image/upload/v1752149679/luscious_lingerie_logo_092115_bx86if.png" alt="Luscious Lingirie logo">
+          <p>Hi <b>${user.name.charAt(0).toUpperCase() + user.name.slice(1).toLowerCase()}</b> Thank you for placing.</p>
+        <p>Please await a call within the next 48hrs from one of our agents to proceed with your order.</p>
+      <p>Regards,</p>
+        <p>Luscious Lingerie</p>
+    `
+  })
+
+  await sendEmail({
+    from: process.env.EMAIL_USER,
+    to: emailAddresses.join(","),
+    subject: "NEW ORDER",
+    html:`
+    <h1>Order notification</h1>
+        <img src="https://res.cloudinary.com/dispu86tu/image/upload/v1752149679/luscious_lingerie_logo_092115_bx86if.png" alt="Luscious Lingirie logo">
+        <p>A Customer with the name <b>${user.name.charAt(0).toUpperCase() + user.name.slice(1).toLowerCase()}</b> just placed an order.</p>
+        <p>Please proceed to your dashboard to take necessary actions and continue with the order.</p>
+        <p>Regards,</p>
+        <p>Luscious Lingerie</p>
+    `
+  })
 
   const newOrder = new Order({
     user: {
-      name: user.name,
-      email: user.email,
-      id: user._id,
+      name: user?.name,
+      email: user?.email,
+      id: user?._id,
+      phoneNo: user?.phoneNo,
     },
     cartList,
     amount_paid,
     orderDate: Date.now(),
+    transaction,
+    address
   });
 
   const savedOrder = await newOrder.save();

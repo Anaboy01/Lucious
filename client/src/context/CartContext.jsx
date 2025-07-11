@@ -7,17 +7,22 @@ import {
   quantityIncreament,
   quantityDecreament,
 } from "@/services/cartService"; // adjust path as needed
+import { useApp } from "./AppContext";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
+    const {loggedIn} = useApp()
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       const data = await getCart();
+         if (!data) {
+        return
+      }
       setCart(data?.cartList || []);
     } catch (err) {
       console.error("Error fetching cart:", err);
@@ -76,9 +81,13 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
+ useEffect(() => {
+  if (loggedIn) {
+    fetchCart()
+  } else {
+    setCart([]) 
+  }
+}, [loggedIn])
 
   return (
     <CartContext.Provider
@@ -91,6 +100,7 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         fetchCart,
+        setCart
       }}
     >
       {children}
