@@ -12,9 +12,7 @@ import PageHeader from "@/components/categories/PageHeader"
 import { useProduct } from "@/context/ProductContext"
 
 
-
-
-const BraCategory = () => {
+const Brallete = () => {
   const [viewMode, setViewMode] = useState("grid")
   const [sortBy, setSortBy] = useState("featured")
   const [selectedColors, setSelectedColors] = useState([])
@@ -29,7 +27,7 @@ const BraCategory = () => {
 
   useEffect(() => {
     const productCategory = async () => {
-      const res = await fetchProductCategory("Bras")
+      const res = await fetchProductCategory("Bralettes")
         if(!res) {
         setProducts([])
       }
@@ -98,9 +96,9 @@ const filteredProducts = products
         
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-red-800 bg-clip-text text-transparent">
-            Bras Collection
+            Brallete Collection
           </h1>
-          <p className="text-gray-600 max-w-2xl">Discover our exquisite collection of bras designed for comfort, support, and elegance. From everyday essentials to special occasion pieces.</p>
+          <p className="text-gray-600 max-w-2xl">Explore our premium collection of bralettes designed for active comfort, secure support, and effortless style—perfect for your workouts, yoga sessions, and athleisure looks.</p>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-64 space-y-6">
@@ -212,4 +210,4 @@ const filteredProducts = products
   )
 }
 
-export default BraCategory
+export default Brallete

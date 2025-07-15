@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Product = require("../models/productModel");
 const nodemailer = require("nodemailer");
+const axios = require("axios");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -32,10 +33,26 @@ const sendEmail =  async (mailOptions) => {
   } catch (error) {
     console.log("Error sending mail:", error);
   }
-
 }
+
+const verifyFlutterwavePayment = async (transaction_id) => {
+  const secretKey = process.env.FLW_SECRET_KEY;
+
+  const response = await axios.get(
+    `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
+    {
+      headers: {
+        Authorization: `Bearer ${secretKey}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
 module.exports = {
   generateToken,
   genrateUniqueId,
-  sendEmail
+  sendEmail,
+  verifyFlutterwavePayment
 };

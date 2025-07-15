@@ -163,7 +163,7 @@ const HeroSection = () => {
               className="flex flex-col sm:flex-row gap-6 mb-16 justify-center animate-fadeInUp"
               style={{ animationDelay: "0.8s" }}
             >
-              <Link to="/sets">
+              <Link to="/category/sets">
                 <Button
                 className="group relative bg-white text-pink-600 hover:bg-pink-50 px-10 py-4 text-lg font-semibold rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
                 onMouseEnter={(e) => {

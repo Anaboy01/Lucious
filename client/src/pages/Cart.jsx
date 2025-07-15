@@ -11,6 +11,7 @@ import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 import { useApp } from "@/context/AppContext";
 import { useOrder } from "@/context/OrderContext";
 
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearUserCart } = useCart();
@@ -83,7 +84,7 @@ const Cart = () => {
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const savings = cartItems.reduce((sum, item) => sum + (item.originalPrice - item.price) * item.quantity, 0);
-  const shipping = subtotal > 200000 ? 0 : 10000;
+  const shipping = subtotal > 200000 ? 0 : 0;
   const total = subtotal + shipping;
 
   const FW_PUBLIC = import.meta.env.VITE_FW_PUBLIC_KEY
@@ -96,7 +97,7 @@ const Cart = () => {
     payment_options: 'card,mobilemoney,ussd',
     customer: {
       email: user?.email,
-       phone_number: '070********',
+       phone_number: user?.phoneNo,
       name: user?.name,
     },
     customizations: {

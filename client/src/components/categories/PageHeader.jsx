@@ -27,13 +27,13 @@ const PageHeader = () => {
 
   
 
-  const navigationItems = [
-    { name: "New Arrivals", href: "#" },
+   const navigationItems = [
+    { name: "New Arrivals", href: "/newArrivals" },
     { name: "Bras", href: "/category/bras" },
-    { name: "Panties", href: "#" },
-    { name: "Sets", href: "#" },
-    { name: "Sleepwear", href: "#" },
-  ]
+    { name: "Panties", href: "/category/panties" },
+    { name: "Sets", href: "/category/sets" },
+    { name: "Sleepwear", href: "/category/sleepwear" },
+  ];
 
 
   const handleLogout = async () => {

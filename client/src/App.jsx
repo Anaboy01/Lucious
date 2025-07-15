@@ -13,6 +13,15 @@ import "react-toastify/dist/ReactToastify.css"
 import BulkReg from './pages/BulkReg'
 import UserOrders from './pages/Order'
 import ViewOrderPage from './pages/ViewOrderPage'
+import NewArrivals from './pages/NewArrivals'
+import Brallete from './pages/categories/Brallete'
+import GymWears from './pages/categories/GymWears'
+import Lingierie from './pages/categories/Lingierie'
+import LoungeWear from './pages/categories/LoungeWear'
+import Panties from './pages/categories/Panties'
+import Sets from './pages/categories/Sets'
+import Shorts from './pages/categories/Shorts'
+import SleepWears from './pages/categories/SleepWears'
 
 
 const App = () => {
@@ -31,7 +40,22 @@ const App = () => {
     <Route path="/bulk" element={<BulkReg/>} />
     <Route path="/orders" element={<UserOrders/>} />
     <Route path="/orderReciept/:orderId" element={<ViewOrderPage/>} />
+    <Route path="/newArrivals" element={<NewArrivals/>} />
+    <Route path="/newArrivals" element={<NewArrivals/>} />
+    
 
+    <Route path='/category'>
+      <Route path='/category/bras' element={<BraCategory/>} />
+      <Route path='/category/brallete' element={<Brallete/>} />
+      <Route path='/category/gymwear' element={<GymWears/>} />
+      <Route path='/category/lingerie' element={<Lingierie/>} />
+      <Route path='/category/loungewear' element={<LoungeWear/>} />
+      <Route path='/category/panties' element={<Panties/>} />
+      <Route path='/category/sets' element={<Sets/>} />
+      <Route path='/category/shorts' element={<Shorts/>} />
+      <Route path='/category/sleepwear' element={<SleepWears/>} />
+    </Route>
+    
       
     
     </Routes>

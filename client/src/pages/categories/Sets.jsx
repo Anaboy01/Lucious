@@ -12,10 +12,8 @@ import PageHeader from "@/components/categories/PageHeader"
 import { useProduct } from "@/context/ProductContext"
 
 
-
-
-const BraCategory = () => {
-  const [viewMode, setViewMode] = useState("grid")
+const Sets = () => {
+ const [viewMode, setViewMode] = useState("grid")
   const [sortBy, setSortBy] = useState("featured")
   const [selectedColors, setSelectedColors] = useState([])
   const [selectedSizes, setSelectedSizes] = useState([])
@@ -29,7 +27,7 @@ const BraCategory = () => {
 
   useEffect(() => {
     const productCategory = async () => {
-      const res = await fetchProductCategory("Bras")
+      const res = await fetchProductCategory("Sets")
         if(!res) {
         setProducts([])
       }
@@ -98,9 +96,9 @@ const filteredProducts = products
         
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-red-800 bg-clip-text text-transparent">
-            Bras Collection
+            Sets Collection
           </h1>
-          <p className="text-gray-600 max-w-2xl">Discover our exquisite collection of bras designed for comfort, support, and elegance. From everyday essentials to special occasion pieces.</p>
+          <p className="text-gray-600 max-w-2xl">Indulge in our stunning lingerie sets—perfectly paired panties, bras, and luxe details designed to seduce and support. From delicate lace to bold statements, discover sets that make every layer unforgettable.</p>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-64 space-y-6">
@@ -212,4 +210,4 @@ const filteredProducts = products
   )
 }
 
-export default BraCategory
+export default Sets

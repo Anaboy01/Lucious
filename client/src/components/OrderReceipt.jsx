@@ -18,6 +18,8 @@ const OrderReceipt = ({ order }) => {
     transaction,
   } = order;
 
+  console.log("", transaction);
+
   const {user: loggedInUser} = useApp();
    const isAdmin = loggedInUser?.isAdmin;
 
@@ -104,10 +106,10 @@ ${address?.address}, ${address?.lga}, ${address?.state}
       {/* Payment Info */}
       <div className="text-sm text-gray-700">
         <h4 className="font-semibold text-gray-800 mb-2">Payment Summary:</h4>
-        <p><strong>Paid:</strong> ₦{amount_paid.toLocaleString()}</p>
+        <p><strong>Paid:</strong> ₦{transaction.txn.amount.toLocaleString()}</p>
         <p><strong>Method:</strong> {transaction?.type || "Flutterwave"}</p>
         <p><strong>Status:</strong> {transaction?.txn?.status}</p>
-        <p><strong>Transaction ID:</strong> {transaction?.txn?.transaction_id}</p>
+        <p><strong>Transaction ID:</strong> {transaction?.txn?.id}</p>
         <p><strong>Reference:</strong> {transaction?.txn?.tx_ref}</p>
       </div>
     </div>

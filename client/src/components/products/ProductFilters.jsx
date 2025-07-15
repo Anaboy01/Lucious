@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
 
 const ProductFilters = ({ filters, onFiltersChange, onClearFilters }) => {
-  const categories = ["All", "Bras", "Panties", "Sets", "Sleepwear", "Lingerie", "Accessories","Gym wears"]
+  const categories = ["All", "Bras", "Panties", "Sets", "Sleep wears", "Lingeries", "Lounge wears","Gym wears", "Shorts", "Sleep wears",]
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"]
  

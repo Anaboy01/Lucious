@@ -1,43 +1,24 @@
+import { useState } from "react"
+import { useProduct } from "@/context/ProductContext"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Grid, List, ChevronDown, ChevronUp } from "lucide-react"
-import {  useEffect, useState } from "react"
-import ProductCard from "@/components/ui/ProductCard"
 import PageHeader from "@/components/categories/PageHeader"
-import { useProduct } from "@/context/ProductContext"
+import ProductCard from "@/components/ui/ProductCard"
 
-
-
-
-const BraCategory = () => {
+const NewArrivals = () => {
+  const { products } = useProduct()
   const [viewMode, setViewMode] = useState("grid")
-  const [sortBy, setSortBy] = useState("featured")
+  const [sortBy, setSortBy] = useState("newest")
   const [selectedColors, setSelectedColors] = useState([])
   const [selectedSizes, setSelectedSizes] = useState([])
   const [priceRange, setPriceRange] = useState([0, 1000000])
   const [openSection, setOpenSection] = useState(null)
-  const { fetchProductCategory} = useProduct()
-  const [products, setProducts] = useState(
-    [
-  ]
-  )
-
-  useEffect(() => {
-    const productCategory = async () => {
-      const res = await fetchProductCategory("Bras")
-        if(!res) {
-        setProducts([])
-      }
-      setProducts(res)
-    }
-
-    productCategory()
-  },[])
 
   const toggleColor = (color) => {
     setSelectedColors((prev) =>
@@ -51,36 +32,6 @@ const BraCategory = () => {
     )
   }
 
-
-const filteredProducts = products
-  .filter((product) => {
-    const colorNames = product.colors?.map((c) => c.colorName.toLowerCase()) || [];
-    const sizeLabels = product.sizes?.map((s) => s.size.toLowerCase()) || [];
-
-    return (
-      product.price >= priceRange[0] &&
-      product.price <= priceRange[1] &&
-      (selectedColors.length === 0 || selectedColors.some((color) => colorNames.includes(color.toLowerCase()))) &&
-      (selectedSizes.length === 0 || selectedSizes.some((size) => sizeLabels.includes(size.toLowerCase())))
-    );
-  })
-  .sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.price - b.price;
-      case "price-high":
-        return b.price - a.price;
-      case "rating":
-        return b.rating - a.rating;
-      case "newest":
-        return new Date(b.dateAdded) - new Date(a.dateAdded);
-      default:
-        return 0;
-    }
-  });
-
-
-
   const CollapsibleSection = ({ title, children, sectionKey }) => (
     <Collapsible open={openSection === sectionKey} onOpenChange={() => setOpenSection(openSection === sectionKey ? null : sectionKey)}>
       <CollapsibleTrigger className="flex justify-between items-center w-full py-2 cursor-pointer">
@@ -91,18 +42,52 @@ const filteredProducts = products
     </Collapsible>
   )
 
+  const oneMonthAgo = new Date()
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
+
+  const filteredProducts = products
+    .filter((product) => new Date(product.dateAdded) >= oneMonthAgo)
+    .filter((product) => {
+      const colorNames = product.colors?.map((c) => c.colorName.toLowerCase()) || []
+      const sizeLabels = product.sizes?.map((s) => s.size.toLowerCase()) || []
+
+      return (
+        product.price >= priceRange[0] &&
+        product.price <= priceRange[1] &&
+        (selectedColors.length === 0 || selectedColors.some((color) => colorNames.includes(color.toLowerCase()))) &&
+        (selectedSizes.length === 0 || selectedSizes.some((size) => sizeLabels.includes(size.toLowerCase())))
+      )
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return a.price - b.price
+        case "price-high":
+          return b.price - a.price
+        case "rating":
+          return b.rating - a.rating
+        case "newest":
+          return new Date(b.dateAdded) - new Date(a.dateAdded)
+        default:
+          return 0
+      }
+    })
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
-      <PageHeader title="Luscious Lingerie" />
+      <PageHeader title="New Arrivals" />
       <div className="container mx-auto px-4 py-8">
-        
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-red-800 bg-clip-text text-transparent">
-            Bras Collection
+            Fresh Finds Just For You
           </h1>
-          <p className="text-gray-600 max-w-2xl">Discover our exquisite collection of bras designed for comfort, support, and elegance. From everyday essentials to special occasion pieces.</p>
+          <p className="text-gray-600 max-w-2xl">
+            Explore our newest collection, just added within the last month. Discover the latest trends and timeless pieces.
+          </p>
         </div>
+
         <div className="flex flex-col lg:flex-row gap-8">
+          {/* Filter Sidebar */}
           <div className="lg:w-64 space-y-6">
             <Card className=" bg-white/70 backdrop-blur-sm border-pink-100">
               <CardContent className="p-6">
@@ -135,9 +120,8 @@ const filteredProducts = products
                   </div>
                 </CollapsibleSection>
 
-                <div className="flex flex-col gap-2">
-
-                   <p>Price (₦)</p>
+                <div className="flex flex-col gap-2 mt-4">
+                  <p>Price (₦)</p>
                   <Slider
                     defaultValue={[1000, 50000]}
                     min={0}
@@ -149,61 +133,62 @@ const filteredProducts = products
                   />
                   <div className="flex justify-between mt-1 text-[12px]">
                     <span>{priceRange[0].toLocaleString()}</span>
-                    <span><span>{priceRange[1].toLocaleString()}</span></span>
+                    <span>{priceRange[1].toLocaleString()}</span>
                   </div>
-
                 </div>
-
-                  
-                
               </CardContent>
             </Card>
           </div>
 
+          {/* Product Section */}
           <div className="flex-1">
             <Card className="mb-6 bg-white/70 backdrop-blur-sm border-pink-100">
               <CardContent className="p-4">
-                <div className="flex flex-col gap-3  items-left lg:flex-row lg:items-center justify-between">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <span className="text-gray-600">{filteredProducts.length} products</span>
                     <div className="flex items-center space-x-2">
-                      <Button variant={viewMode === "grid" ? "default" : "outline"} size="sm" onClick={() => setViewMode("grid")} className={viewMode === "grid" ? "bg-red-700 text-white" : ""}><Grid className="w-4 h-4" /></Button>
-                      <Button variant={viewMode === "list" ? "default" : "outline"} size="sm" onClick={() => setViewMode("list")} className={viewMode === "list" ? "bg-red-700 text-white" : ""}><List className="w-4 h-4" /></Button>
+                      <Button
+                        variant={viewMode === "grid" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setViewMode("grid")}
+                        className={viewMode === "grid" ? "bg-red-700 text-white" : ""}
+                      >
+                        <Grid className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === "list" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className={viewMode === "list" ? "bg-red-700 text-white" : ""}
+                      >
+                        <List className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">Sort by:</span>
-                      <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="featured">Featured</SelectItem>
-                          <SelectItem value="price-low">Price: Low to High</SelectItem>
-                          <SelectItem value="price-high">Price: High to Low</SelectItem>
-                          <SelectItem value="newest">Newest</SelectItem>
-                          <SelectItem value="rating">Highest Rated</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">Sort by:</span>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="featured">Featured</SelectItem>
+                        <SelectItem value="price-low">Price: Low to High</SelectItem>
+                        <SelectItem value="price-high">Price: High to Low</SelectItem>
+                        <SelectItem value="newest">Newest</SelectItem>
+                        <SelectItem value="rating">Highest Rated</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </CardContent>
             </Card>
+
             <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
               {filteredProducts.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} />
               ))}
-            </div>
-            <div className="flex justify-center mt-12">
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" className="border-red-700 text-red-700 hover:bg-red-50 bg-transparent">Previous</Button>
-                <Button className="bg-red-700 text-white">1</Button>
-                <Button variant="outline">2</Button>
-                <Button variant="outline">3</Button>
-                <Button variant="outline" className="border-red-700 text-red-700 hover:bg-red-50 bg-transparent">Next</Button>
-              </div>
             </div>
           </div>
         </div>
@@ -212,4 +197,4 @@ const filteredProducts = products
   )
 }
 
-export default BraCategory
+export default NewArrivals

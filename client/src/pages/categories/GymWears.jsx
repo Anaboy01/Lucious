@@ -13,9 +13,8 @@ import { useProduct } from "@/context/ProductContext"
 
 
 
-
-const BraCategory = () => {
-  const [viewMode, setViewMode] = useState("grid")
+const GymWears = () => {
+     const [viewMode, setViewMode] = useState("grid")
   const [sortBy, setSortBy] = useState("featured")
   const [selectedColors, setSelectedColors] = useState([])
   const [selectedSizes, setSelectedSizes] = useState([])
@@ -29,8 +28,8 @@ const BraCategory = () => {
 
   useEffect(() => {
     const productCategory = async () => {
-      const res = await fetchProductCategory("Bras")
-        if(!res) {
+      const res = await fetchProductCategory("Gym wears")
+      if(!res) {
         setProducts([])
       }
       setProducts(res)
@@ -98,9 +97,9 @@ const filteredProducts = products
         
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-red-800 bg-clip-text text-transparent">
-            Bras Collection
+            Gym Wear Collection
           </h1>
-          <p className="text-gray-600 max-w-2xl">Discover our exquisite collection of bras designed for comfort, support, and elegance. From everyday essentials to special occasion pieces.</p>
+          <p className="text-gray-600 max-w-2xl">Discover our exquisite collection of gym wear, crafted for comfort, support, and style. From everyday training essentials to standout pieces for special fitness moments.</p>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-64 space-y-6">
@@ -212,4 +211,4 @@ const filteredProducts = products
   )
 }
 
-export default BraCategory
+export default GymWears

@@ -243,8 +243,15 @@ const BulkReg = () => {
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="set">Set</SelectItem>
+                          <SelectItem value="set">Sets</SelectItem>
                           <SelectItem value="bras">Bras</SelectItem>
+                          <SelectItem value="bras">Bralletes</SelectItem>
+                          <SelectItem value="bras">Gym wears</SelectItem>
+                          <SelectItem value="bras">Lingeries</SelectItem>
+                          <SelectItem value="bras">Lounge wears</SelectItem>
+                          <SelectItem value="bras">Panties</SelectItem>
+                          <SelectItem value="bras">Shorts</SelectItem>
+                          <SelectItem value="bras">Sleep wears</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

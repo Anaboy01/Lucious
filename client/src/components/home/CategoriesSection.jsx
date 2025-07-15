@@ -9,10 +9,11 @@ const CategoriesSection = () => {
     { name: "Panties", desc: "Everyday essentials", bg: "from-red-200 to-pink-200", image: "/pantcat.png", link: "/category/panties" },
     { name: "Sets", desc: "Complete collections", bg: "from-pink-300 to-red-300", image: "/setCat.png", link: "/category/sets" },
     { name: "Short", desc: "Sexy & comfortable", bg: "from-red-100 to-pink-200", image: "/shortCat.png", link: "/category/shorts" },
-    { name: "Loungewear", desc: "Relax in style", bg: "from-pink-100 to-red-100", image: "/loungeCat.png", link: "/category/loungewear" },
+    { name: "Lounge Wears", desc: "Relax in style", bg: "from-pink-100 to-red-100", image: "/loungeCat.png", link: "/category/loungewear" },
     { name: "Brallete", desc: "Finish your look", bg: "from-red-50 to-pink-50", image: "/bralleteCat.png", link: "/category/brallete" },
     { name: "Gym Wears", desc: "Bring the fitness out", bg: "from-red-50 to-pink-50", image: "/gymCat.png", link: "/category/gymwear" },
     { name: "Lingirie", desc: "Just sexy", bg: "from-red-50 to-pink-50", image: "/lingerieCat.png", link: "/category/lingerie" },
+    { name: "Sleep Wears", desc: "The beautiful Nights", bg: "from-red-50 to-pink-50", image: "/sleepWearCat.png", link: "/category/sleepwear" },
   ];
 
 
