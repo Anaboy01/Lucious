@@ -16,9 +16,8 @@ import { useApp } from "@/context/AppContext";
 import { Link } from "react-router-dom";
 import { ChevronLeft, Minus, Square, X } from "lucide-react";
 import { useProduct } from "@/context/ProductContext";
-
-
-
+import CameraColorPickerModal from "@/components/admin/CameraColorPickerModal";
+import namer from 'color-namer'
 
 const emptyTemplate = {
   name: "",
@@ -39,7 +38,12 @@ const BulkReg = () => {
   const [expandedForms, setExpandedForms] = useState([true]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const {bulkCreateProducts} = useProduct()
+  const { bulkCreateProducts } = useProduct();
+  const [cameraModal, setCameraModal] = useState({
+    open: false,
+    formIdx: null,
+    colorIdx: null,
+  });
 
   const handleFieldChange = (idx, e) => {
     const { name, value } = e.target;
@@ -131,12 +135,35 @@ const BulkReg = () => {
     setLoading(false);
   };
 
+
+const handlePickColor = (hex) => {
+  const name = namer(hex).basic[0].name; // e.g., "Red", "Sky Blue"
+
+  const { formIdx, colorIdx } = cameraModal;
+
+  setForms((prevForms) => {
+    return prevForms.map((form, fIdx) => {
+      if (fIdx !== formIdx) return form;
+
+      const updatedColors = form.colors.map((color, cIdx) => {
+        if (cIdx !== colorIdx) return color;
+        return { ...color, colorValue: hex, colorName: name }; // add name too
+      });
+
+      return { ...form, colors: updatedColors };
+    });
+  });
+
+  setCameraModal({ open: false, formIdx: null, colorIdx: null });
+};
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
       <PageHeader />
       <div className="container mx-auto p-6 space-y-6">
         <Link className="flex items-center  text-pink-600 " to="/admin">
-           <ChevronLeft/>  <span>back</span>
+          <ChevronLeft /> <span>back</span>
         </Link>
         <h1 className="text-3xl font-bold text-center text-pink-700">
           Bulk Register Products
@@ -154,12 +181,12 @@ const BulkReg = () => {
                 </CardTitle>
                 <div className="space-x-2">
                   <Button
-                  size="xs"
+                    size="xs"
                     variant="outline"
                     className=" text-pink-600 border-pink-300  hover:text-pink-600  hover:border-pink-300 "
                     onClick={() => toggleExpand(idx)}
                   >
-                    {expandedForms[idx] ? <Minus/> : <Square/>}
+                    {expandedForms[idx] ? <Minus /> : <Square />}
                   </Button>
                   <Button
                     variant="outline"
@@ -167,7 +194,7 @@ const BulkReg = () => {
                     className="text-pink-600 border-pink-300  hover:text-pink-600  hover:border-pink-300 "
                     onClick={() => removeForm(idx)}
                   >
-                   <X/>
+                    <X />
                   </Button>
                 </div>
               </CardHeader>
@@ -275,7 +302,10 @@ const BulkReg = () => {
                     <div>
                       <Label>Features</Label>
                       {form.features.map((f, i) => (
-                        <div key={i} className="flex items-center space-x-2 mb-2">
+                        <div
+                          key={i}
+                          className="flex items-center space-x-2 mb-2"
+                        >
                           <Input
                             value={f}
                             onChange={(e) =>
@@ -291,9 +321,7 @@ const BulkReg = () => {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() =>
-                              removeArrayItem(idx, "features", i)
-                            }
+                            onClick={() => removeArrayItem(idx, "features", i)}
                           >
                             ×
                           </Button>
@@ -312,7 +340,10 @@ const BulkReg = () => {
                     <div>
                       <Label>Images</Label>
                       {form.images.map((url, i) => (
-                        <div key={i} className="flex items-center space-x-2 mb-2">
+                        <div
+                          key={i}
+                          className="flex items-center space-x-2 mb-2"
+                        >
                           <Input
                             value={url}
                             onChange={(e) =>
@@ -347,7 +378,10 @@ const BulkReg = () => {
                     <div>
                       <Label>Colors</Label>
                       {form.colors.map((c, i) => (
-                        <div key={i} className="flex items-center space-x-2 mb-2">
+                        <div
+                          key={i}
+                          className="flex items-center space-x-2 mb-2"
+                        >
                           <Input
                             placeholder="Name"
                             value={c.colorName}
@@ -361,19 +395,35 @@ const BulkReg = () => {
                               )
                             }
                           />
-                          <Input
-                            placeholder="#hex"
-                            value={c.colorValue}
-                            onChange={(e) =>
-                              handleArrayChange(
-                                idx,
-                                "colors",
-                                i,
-                                "colorValue",
-                                e.target.value
-                              )
-                            }
-                          />
+                          <div className="flex gap-2 w-full">
+                            <Input
+                              placeholder="#hex"
+                              value={c.colorValue}
+                              onChange={(e) =>
+                                handleArrayChange(
+                                  idx,
+                                  "colors",
+                                  i,
+                                  "colorValue",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                setCameraModal({
+                                  open: true,
+                                  formIdx: idx,
+                                  colorIdx: i,
+                                })
+                              }
+                            >
+                              🎥
+                            </Button>
+                          </div>
+
                           <Button
                             size="icon"
                             variant="ghost"
@@ -396,7 +446,10 @@ const BulkReg = () => {
                     <div>
                       <Label>Sizes</Label>
                       {form.sizes.map((s, i) => (
-                        <div key={i} className="flex items-center space-x-2 mb-2">
+                        <div
+                          key={i}
+                          className="flex items-center space-x-2 mb-2"
+                        >
                           <Input
                             placeholder="Size"
                             value={s.size}
@@ -465,6 +518,12 @@ const BulkReg = () => {
           </Button>
         </div>
       </div>
+
+      <CameraColorPickerModal
+        open={cameraModal.open}
+        onClose={() => setCameraModal((c) => ({ ...c, open: false }))}
+        onPickColor={handlePickColor}
+      />
     </div>
   );
 };

@@ -22,6 +22,7 @@ import Panties from './pages/categories/Panties'
 import Sets from './pages/categories/Sets'
 import Shorts from './pages/categories/Shorts'
 import SleepWears from './pages/categories/SleepWears'
+import CameraColorPicker from './pages/CameraColorPicker'
 
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
     <Route path="/orderReciept/:orderId" element={<ViewOrderPage/>} />
     <Route path="/newArrivals" element={<NewArrivals/>} />
     <Route path="/newArrivals" element={<NewArrivals/>} />
+      <Route path="/camera" element={<CameraColorPicker />} />
     
 
     <Route path='/category'>
