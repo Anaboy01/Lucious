@@ -1,6 +1,6 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -12,32 +12,58 @@ const cors = require("cors");
 dotenv.config();
 const app = express();
 
-// Enable CORS for all origins
-app.use(  cors({
-  origin: ["http://localhost:5173", "https://lucious-4nrp.vercel.app/"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+// ✅ Allowed Origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://lucious-4nrp.vercel.app",
+];
 
-// Middlewares
+// ✅ Proper CORS Configuration
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like Postman, curl, etc.)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// ✅ Optional: Handle CORS Errors Gracefully
+app.use((err, req, res, next) => {
+  if (err.message === "Not allowed by CORS") {
+    return res.status(403).json({ message: "CORS error: origin not allowed" });
+  }
+  next(err);
+});
+
+// ✅ Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/wish', wishRoutes);
-app.use('/api/order', orderRoutes);
+// ✅ Routes
+app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/wish", wishRoutes);
+app.use("/api/order", orderRoutes);
 
-
-
-// Database connection & server start
-mongoose.connect(process.env.MONGO_URI).then(() => {
-    console.log('MongoDB connected');
+// ✅ Database connection & Server start
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
     app.listen(process.env.PORT, () => {
-        console.log(`Server running on port ${process.env.PORT}`);
+      console.log(`🚀 Server running on port ${process.env.PORT}`);
     });
-}).catch(err => console.error(err));
+  })
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
